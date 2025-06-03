@@ -8,12 +8,15 @@ import {
   Typography,
   CircularProgress,
   Box,
+  Alert,
 } from "@mui/material";
 
 export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -22,6 +25,9 @@ export default function PostDetail() {
         setPost(fetchedPost);
       } catch (error) {
         console.error("Error fetching post:", error);
+        setError("Post not found.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchPost();
@@ -36,10 +42,18 @@ export default function PostDetail() {
     }
   };
 
-  if (!post) {
+  if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
