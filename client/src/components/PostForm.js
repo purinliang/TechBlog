@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../api';
 
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+
 export default function PostForm() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -14,29 +18,32 @@ export default function PostForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block">Title</label>
-        <input
-          className="border p-2 w-full"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label className="block">Content</label>
-        <textarea
-          className="border p-2 w-full"
-          rows={6}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-        />
-      </div>
-      <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ maxWidth: 600, mx: 'auto', mt: 4, display: 'flex', flexDirection: 'column', gap: 3 }}
+    >
+      <TextField
+        label="Title"
+        variant="outlined"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+        fullWidth
+      />
+      <TextField
+        label="Content"
+        variant="outlined"
+        multiline
+        rows={6}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        required
+        fullWidth
+      />
+      <Button variant="contained" type="submit" size="large">
         Post
-      </button>
-    </form>
+      </Button>
+    </Box>
   );
 }

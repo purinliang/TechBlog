@@ -1,16 +1,25 @@
 import { Outlet, Link } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 
 export default function App() {
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <header className="mb-4 border-b pb-2">
-        <h1 className="text-3xl font-bold">TechBlog</h1>
-        <nav className="mt-2 space-x-4">
-          <Link to="/">Home</Link>
-          <Link to="/new">New Post</Link>
-        </nav>
+    <Box sx={{ p: 4, maxWidth: 900, mx: 'auto', fontFamily: 'Roboto, sans-serif' }}>
+      <header>
+        <Typography variant="h2" fontWeight="bold" color="primary" gutterBottom>
+          TechBlog
+        </Typography>
+        <Stack direction="row" spacing={4} mb={4}>
+          <Link to="/" style={{ color: '#1976d2', textDecoration: 'none', fontWeight: '500' }}>
+            Home
+          </Link>
+          <Link to="/new" style={{ color: '#1976d2', textDecoration: 'none', fontWeight: '500' }}>
+            New Post
+          </Link>
+        </Stack>
       </header>
       <Outlet />
-    </div>
+    </Box>
   );
 }
