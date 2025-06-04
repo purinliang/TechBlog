@@ -15,6 +15,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import ReactMarkdown from "react-markdown";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -77,12 +78,7 @@ export default function PostDetail() {
         <Typography variant="h4" component="h2" gutterBottom color="primary">
           {post.title}
         </Typography>
-        <Typography
-          variant="body1"
-          sx={{ whiteSpace: "pre-line", color: "text.primary" }}
-        >
-          {post.content}
-        </Typography>
+        <ReactMarkdown>{post.content}</ReactMarkdown>
       </CardContent>
       <Button
         variant="outlined"
