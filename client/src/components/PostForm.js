@@ -25,9 +25,8 @@ export default function PostForm() {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        maxWidth: 600,
+        maxWidth: 800,
         mx: "auto",
-        mt: 4,
         display: "flex",
         flexDirection: "column",
         gap: 3,
@@ -46,7 +45,7 @@ export default function PostForm() {
         label="Content"
         variant="outlined"
         multiline
-        rows={6}
+        rows={8}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         required
