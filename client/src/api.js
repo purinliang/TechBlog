@@ -1,4 +1,4 @@
-const API_BASE = "http://192.168.1.114:5000";
+const API_BASE = process.env.REACT_APP_API_BASE;
 
 export async function getPosts() {
   const res = await fetch(`${API_BASE}/posts`);
