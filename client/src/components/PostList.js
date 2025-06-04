@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPosts } from "../api";
+import { getPosts } from "../apis/postApi";
 import {
   Card,
   CardContent,

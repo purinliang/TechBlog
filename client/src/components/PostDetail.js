@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getPostById, deletePost } from "../api";
+import { getPostById, deletePost } from "../apis/postApi";
 import {
   Button,
   Card,
@@ -86,7 +86,7 @@ export default function PostDetail() {
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => navigate(`/edit/${id}`)}
+        onClick={() => navigate(`/edit_post/${id}`)}
         sx={{ mr: 2 }}
       >
         Edit

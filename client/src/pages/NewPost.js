@@ -1,6 +1,6 @@
 import PostForm from "../components/PostForm";
 import { Box, Card, CardHeader, CardContent, Alert } from "@mui/material";
-import { createPost } from "../api";
+import { createPost } from "../apis/postApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 

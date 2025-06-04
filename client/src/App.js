@@ -29,7 +29,7 @@ export default function App() {
             Home
           </Link>
           <Link
-            to="/new"
+            to="/new_post"
             style={{
               color: "#1976d2",
               textDecoration: "none",
