@@ -57,8 +57,8 @@ export default function PostList() {
             variant="outlined"
             sx={{ cursor: "pointer", "&:hover": { boxShadow: 6 } }}
           >
-            <CardContent>
-              <Link to={`/posts/${post.id}`} style={{ textDecoration: "none" }}>
+            <Link to={`/posts/${post.id}`} style={{ textDecoration: "none" }}>
+              <CardContent>
                 <Typography
                   variant="h6"
                   color="primary"
@@ -67,13 +67,13 @@ export default function PostList() {
                 >
                   {post.title}
                 </Typography>
-              </Link>
-              <Typography variant="body2" color="text.secondary" noWrap>
-                {post.content.length > 100
-                  ? post.content.slice(0, 100) + "..."
-                  : post.content}
-              </Typography>
-            </CardContent>
+                <Typography variant="body2" color="text.secondary" noWrap>
+                  {post.content.length > 100
+                    ? post.content.slice(0, 100) + "..."
+                    : post.content}
+                </Typography>
+              </CardContent>
+            </Link>
           </Card>
         ))
       )}
