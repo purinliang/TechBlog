@@ -1,28 +1,39 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createPost } from '../api';
-
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPost } from "../api";
+import { Box, TextField, Button, Alert } from "@mui/material";
 
 export default function PostForm() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createPost({ title, content });
-    navigate('/');
+    try {
+      await createPost({ title, content });
+      navigate("/");
+    } catch (error) {
+      console.error("Error creating post:", error);
+      setError("Failed to create post.");
+    }
   };
 
   return (
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ maxWidth: 600, mx: 'auto', mt: 4, display: 'flex', flexDirection: 'column', gap: 3 }}
+      sx={{
+        maxWidth: 600,
+        mx: "auto",
+        mt: 4,
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+      }}
     >
+      {error && <Alert severity="error">{error}</Alert>}
       <TextField
         label="Title"
         variant="outlined"
