@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getPostById, updatePost } from "../api";
+import { getPostById, updatePost } from "../apis/postApi";
 import { Box, Card, CardHeader, CardContent, Alert } from "@mui/material";
 import PostForm from "../components/PostForm";
 

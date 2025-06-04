@@ -14,9 +14,9 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
-        <Route path="new" element={<NewPost />} />
+        <Route path="new_post" element={<NewPost />} />
         <Route path="posts/:id" element={<PostDetail />} />
-        <Route path="edit/:id" element={<EditPost />} />
+        <Route path="edit_post/:id" element={<EditPost />} />
       </Route>
     </Routes>
   </Router>
