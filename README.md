@@ -1,37 +1,47 @@
 # TechBlog
 
 A full-stack blog platform where users can view, create, update, and delete blog posts.
-This platform provides a user-friendly interface and seamless interaction with the backend.
-Built with **React**, **Node.js**, and **PostgreSQL**.
+This project provides a user-friendly interface and seamless interaction between frontend and backend.
 
 ## Tech Stack & Architecture
 
-Frontend: React + Fetch API
-Backend: Node.js + Express
-Database: PostgreSQL (via Supabase)
+```plain
+| Component | Technology        |
+| --------- | ----------------- |
+| Frontend  | React + Fetch API |
+| Backend   | Node.js + Express |
+| Database  | PostgreSQL        |
+```
 
 [Architecture Diagram - TODO]
 
 ## Live Demo
 
-**Frontend (Render):** https://techblog-frontend-tue4.onrender.com/
+Deployed for better demonstration and testing.
 
-**Backend (Render):** https://techblog-backend-gcyj.onrender.com/
+**Frontend (Render):** Hosted React app to interact with the backend.
 
-## Management Dashboards
+https://techblog-frontend-tue4.onrender.com/
 
-**Render Dashboard:** https://dashboard.render.com/
+**Backend (Render):** RESTful API server handling all blog post operations.
 
-(Manage your deployments and view logs.)
+https://techblog-backend-gcyj.onrender.com/
 
-**Supabase Dashboard:** https://supabase.com/dashboard/
+### Management Dashboard
 
-(Handle database management and authentication.)
+**Render Dashboard:** Manage your deployments and view logs.
+
+https://dashboard.render.com/
+
+**Database (Supabase):** PostgreSQL-compatible cloud DB with easy web UI.
+
+https://supabase.com/dashboard/
 
 ## Fully RESTful API
 
 All API routes are prefixed with `/posts`.
 
+```plain
 | Method | Endpoint     | Description              |
 | ------ | ------------ | ------------------------ |
 | GET    | `/posts`     | Retrieve all blog posts  |
@@ -39,6 +49,7 @@ All API routes are prefixed with `/posts`.
 | POST   | `/posts`     | Create a new blog post   |
 | PUT    | `/posts/:id` | Update a blog post       |
 | DELETE | `/posts/:id` | Delete a blog post by ID |
+```
 
 ## Implementation Details
 
@@ -46,42 +57,30 @@ All API routes are prefixed with `/posts`.
 
 **Frontend API File:** `client/src/postApi.js`
 
-## Installation & Local Dev
+## Installation & Local Development
 
-### 1. Clone the repo
+### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/.../TechBlog.git
+git clone https://github.com/your-username/TechBlog.git
 cd TechBlog
 ```
 
 ### 2. Setup Environment
 
-Set up `.env` in both `client` and `server` with:
+Create `.env` files in both `client/` and `server/`:
 
-```plain
+```bash
 # client/.env
 REACT_APP_API_BASE=http://localhost:5000
 ```
 
-```plain
+```bash
 # server/.env
 PORT=5000
-SUPABASE_URL=...
-SUPABASE_SERVICE_ROLE_KEY=...
 ```
 
-### 3. Start the frontend
-
-```bash
-cd client
-npm install
-npm start
-```
-
-View at: http://localhost:3000/
-
-### 4. Start the backend
+### 3. Start the backend
 
 ```bash
 cd server
@@ -89,4 +88,157 @@ npm install
 node index.js
 ```
 
-View at: http://localhost:5000/posts
+Visit: http://localhost:5000/posts
+
+### 4. Start the frontend
+
+```bash
+cd client
+npm install
+npm start
+```
+
+Visit: http://localhost:3000/
+
+### 5. [Optional] Set Up Local PostgreSQL
+
+#### 5.1 Init PostgreSQL
+
+Install PostgreSQL (if not already installed)
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
+
+Start the PostgreSQL service (if not already started)
+
+```bash
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
+
+Check the PostgreSQL service:
+
+```bash
+sudo systemctl status postgresql
+```
+
+#### 5.2 Create Database and User
+
+Log in as the PostgreSQL superuser:
+
+```bash
+sudo -u postgres psql
+```
+
+Then run the following commands:
+
+```sql
+DROP DATABASE IF EXISTS techblog;
+DROP USER IF EXISTS techblog_admin;
+
+CREATE DATABASE techblog;
+CREATE USER techblog_admin WITH PASSWORD 'techblog_password';
+GRANT ALL PRIVILEGES ON DATABASE techblog TO techblog_admin;
+```
+
+Then Exit with `\q`.
+
+#### 5.3 Change Authentication Method (from peer to md5)
+
+Find the `pg_hba.conf` path:
+
+```bash
+sudo -u postgres psql -c "SHOW hba_file;"
+```
+
+Edit the file (e.g., `/etc/postgresql/16/main/pg_hba.conf`):
+
+```bash
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+```
+
+Find this line:
+
+```plain
+local   all             all                                     peer
+```
+
+Change it to:
+
+```plain
+local   all             all                                     md5
+```
+
+Save and exit, then restart PostgreSQL:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+#### 5.4 Initialize Tables
+
+Log in as the PostgreSQL superuser:
+
+```bash
+sudo -u postgres psql
+```
+
+Switch to your database:
+
+```sql
+\c techblog
+```
+
+Paste in your schema SQL (or run from file `database/init.sql`):
+
+```sql
+\i database/init.sql
+```
+
+Then change table ownership:
+
+```sql
+ALTER TABLE posts OWNER TO techblog_admin;
+ALTER TABLE profiles OWNER TO techblog_admin;
+```
+
+Then Exit with `\q`.
+
+#### 5.5 Test the Connection
+
+```bash
+psql -U techblog_admin -d techblog -W
+```
+
+Once connected, test:
+
+```sql
+\dt
+\d+ posts
+\d+ profiles
+```
+
+#### 5.6 Config backend environment
+
+Set up `.env` in `server` with:
+
+```bash
+# server/.env
+USE_LOCAL_POSTGRESQL=true
+LOCAL_POSTGRESQL_URL=postgresql://techblog_admin:techblog_password@localhost:5432/techblog
+```
+
+### 6. [Optional] Switch to Supabase
+
+Create a supabase account then config the `.env` in `server` with:
+
+```bash
+# server/.env
+USE_SUPABASE=true
+SUPABASE_URL=YOUR_SUPABASE_SERVICE_ROLE_KEY
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+```
+
+Make sure only one database method is active at a time.
