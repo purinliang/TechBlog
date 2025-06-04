@@ -47,7 +47,7 @@ export default function PostList() {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {posts.length === 0 ? (
         <Alert severity="info">No posts available.</Alert>
       ) : (
@@ -55,7 +55,7 @@ export default function PostList() {
           <Card
             key={post.id}
             variant="outlined"
-            sx={{ cursor: "pointer", "&:hover": { boxShadow: 6 } }}
+            sx={{ cursor: "pointer", "&:hover": { boxShadow: 8 } }}
           >
             <Link to={`/posts/${post.id}`} style={{ textDecoration: "none" }}>
               <CardContent>
