@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import NewPost from "./pages/NewPost";
 import EditPost from "./pages/EditPost";
 import PostDetail from "./components/PostDetail";
+import AuthPage from "./pages/AuthPage";
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -17,6 +18,7 @@ root.render(
         <Route path="new_post" element={<NewPost />} />
         <Route path="posts/:id" element={<PostDetail />} />
         <Route path="edit_post/:id" element={<EditPost />} />
+        <Route path="auth" element={<AuthPage />} />
       </Route>
     </Routes>
   </Router>
