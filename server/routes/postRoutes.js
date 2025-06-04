@@ -3,7 +3,7 @@ const router = express.Router();
 const PostModel = require("../models/postModel");
 
 const logRequest = (req) => {
-  console.log(`Received ${req.method} request for: ${req.originalUrl}`);
+  console.log(`Received ${req.method} request for: ${req.originalUrl}: ${req}`);
 };
 
 router.get("/", async (req, res) => {
@@ -19,6 +19,9 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   logRequest(req);
+  if (!req.params.id) {
+    return res.status(400).json({ error: "Post ID is required." });
+  }
   try {
     const post = await PostModel.getById(req.params.id);
     if (!post) {
@@ -52,6 +55,9 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   logRequest(req);
+  if (!req.params.id) {
+    return res.status(400).json({ error: "Post ID is required." });
+  }
   const { title, content } = req.body;
   try {
     const result = await PostModel.update(req.params.id, title, content);
@@ -65,6 +71,9 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   logRequest(req);
+  if (!req.params.id) {
+    return res.status(400).json({ error: "Post ID is required." });
+  }
   try {
     const result = await PostModel.delete(req.params.id);
     res.json(result);

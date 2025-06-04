@@ -87,7 +87,8 @@ const PostModel = {
         .delete()
         .eq("id", id);
       if (error) throw error;
-      return { changes: data.length };
+      const changes = Array.isArray(data) ? data.length : 0;
+      return { changes };
     } else {
       const result = await dbClient.query("DELETE FROM posts WHERE id = $1", [
         id,

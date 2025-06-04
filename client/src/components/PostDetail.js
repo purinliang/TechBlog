@@ -99,14 +99,17 @@ export default function PostDetail() {
         Delete
       </Button>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        sx={{ p: 4 }}
+      >
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Are you sure you want to delete this post? This action cannot be
             undone.
           </DialogContentText>
-          {deleteError && <Alert severity="error">{deleteError}</Alert>}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)} color="primary">
@@ -116,6 +119,7 @@ export default function PostDetail() {
             Delete
           </Button>
         </DialogActions>
+        {deleteError && <Alert severity="error">{deleteError}</Alert>}
       </Dialog>
     </Card>
   );
