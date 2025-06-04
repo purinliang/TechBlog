@@ -9,6 +9,11 @@ import {
   CircularProgress,
   Box,
   Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 
 export default function PostDetail() {
@@ -17,6 +22,7 @@ export default function PostDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -40,6 +46,11 @@ export default function PostDetail() {
     } catch (error) {
       console.error("Error deleting post:", error);
     }
+  };
+
+  const handleConfirmDelete = () => {
+    handleDelete();
+    setOpenDialog(false);
   };
 
   if (loading) {
@@ -79,9 +90,31 @@ export default function PostDetail() {
       >
         Edit
       </Button>
-      <Button variant="outlined" color="error" onClick={handleDelete}>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={() => setOpenDialog(true)}
+      >
         Delete
       </Button>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this post? This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }
