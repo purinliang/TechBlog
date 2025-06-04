@@ -8,7 +8,7 @@ export default function App() {
     <Box
       sx={{
         p: 4,
-        maxWidth: 1200,
+        maxWidth: 800,
         mx: "auto",
         fontFamily: "Roboto, sans-serif",
       }}
