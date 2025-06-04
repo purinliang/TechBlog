@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://192.168.1.114:5000";
 
 export async function getPosts() {
   const res = await fetch(`${API_BASE}/posts`);
