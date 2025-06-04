@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, updatePost } from "../api";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
+import PostForm from "../components/PostForm";
 
 export default function EditPost() {
   const { id } = useParams();
@@ -22,8 +23,7 @@ export default function EditPost() {
     fetchPost();
   }, [id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleUpdatePost = async ({ title, content }) => {
     try {
       await updatePost(id, { title, content });
       navigate(`/posts/${id}`);
@@ -33,39 +33,18 @@ export default function EditPost() {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        maxWidth: 600,
-        mx: "auto",
-        mt: 4,
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-      }}
-    >
-      <TextField
-        label="Title"
-        variant="outlined"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-        fullWidth
-      />
-      <TextField
-        label="Content"
-        variant="outlined"
-        multiline
-        rows={6}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        required
-        fullWidth
-      />
-      <Button variant="contained" type="submit" size="large">
-        Update Post
-      </Button>
+    <Box sx={{ maxWidth: 800, mx: "auto", mt: 6 }}>
+      <Typography variant="h5" fontWeight="600" mb={3} color="primary">
+        Edit a Post
+      </Typography>
+      <Paper sx={{ p: 3, cursor: "pointer", "&:hover": { boxShadow: 8 } }}>
+        <PostForm
+          buttonText="Update Post"
+          onSubmit={handleUpdatePost}
+          initialTitle={title}
+          initialContent={content}
+        />
+      </Paper>
     </Box>
   );
 }

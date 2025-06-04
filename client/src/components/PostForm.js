@@ -1,24 +1,32 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createPost } from "../api";
+import { useState, useEffect } from "react";
 import { Box, TextField, Button, Alert } from "@mui/material";
 
-export default function PostForm() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+export default function PostForm({
+  buttonText = "Submit",
+  onSubmit,
+  initialTitle = "",
+  initialContent = "",
+}) {
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await createPost({ title, content });
-      navigate("/");
-    } catch (error) {
-      console.error("Error creating post:", error);
-      setError("Failed to create post.");
+    if (onSubmit) {
+      try {
+        await onSubmit({ title, content });
+      } catch (error) {
+        console.error("Error submitting post:", error);
+        setError("Failed to create or update post.");
+      }
     }
   };
+
+  useEffect(() => {
+    setTitle(initialTitle);
+    setContent(initialContent);
+  }, [initialTitle, initialContent]);
 
   return (
     <Box
@@ -52,7 +60,7 @@ export default function PostForm() {
         fullWidth
       />
       <Button variant="contained" type="submit" size="large">
-        Post
+        {buttonText}
       </Button>
     </Box>
   );
