@@ -1,57 +1,49 @@
-const db = require('../database/db');
+const supabase = require("../supabaseClient");
 
 const PostModel = {
-  getAll: () => {
-    return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM posts ORDER BY created_at DESC', [], (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
+  getAll: async () => {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return data;
   },
 
-  getById: (id) => {
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM posts WHERE id = ?', [id], (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      });
-    });
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (error) throw error;
+    return data;
   },
 
-  create: (title, content) => {
-    return new Promise((resolve, reject) => {
-      db.run(
-        'INSERT INTO posts (title, content) VALUES (?, ?)',
-        [title, content],
-        function (err) {
-          if (err) reject(err);
-          else resolve({ id: this.lastID });
-        }
-      );
-    });
+  create: async (title, content) => {
+    const { data, error } = await supabase
+      .from("posts")
+      .insert({ title, content })
+      .select()
+      .single();
+    if (error) throw error;
+    return { id: data.id };
   },
 
-  update: (id, title, content) => {
-    return new Promise((resolve, reject) => {
-      db.run(
-        'UPDATE posts SET title = ?, content = ? WHERE id = ?',
-        [title, content, id],
-        function (err) {
-          if (err) reject(err);
-          else resolve({ changes: this.changes });
-        }
-      );
-    });
+  update: async (id, title, content) => {
+    const { error, data } = await supabase
+      .from("posts")
+      .update({ title, content })
+      .eq("id", id)
+      .select();
+    if (error) throw error;
+    return { changes: data.length };
   },
 
-  delete: (id) => {
-    return new Promise((resolve, reject) => {
-      db.run('DELETE FROM posts WHERE id = ?', [id], function (err) {
-        if (err) reject(err);
-        else resolve({ changes: this.changes });
-      });
-    });
+  delete: async (id) => {
+    const { error, data } = await supabase.from("posts").delete().eq("id", id);
+    if (error) throw error;
+    return { changes: data.length };
   },
 };
 
