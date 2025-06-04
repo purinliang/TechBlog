@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, updatePost } from "../api";
-import { Box, Typography, Paper } from "@mui/material";
+import { Box, Card, CardHeader, CardContent, Alert } from "@mui/material";
 import PostForm from "../components/PostForm";
 
 export default function EditPost() {
@@ -9,6 +9,7 @@ export default function EditPost() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -18,6 +19,7 @@ export default function EditPost() {
         setContent(post.content);
       } catch (error) {
         console.error("Error fetching post:", error);
+        setError("Failed to fetch post.");
       }
     };
     fetchPost();
@@ -29,22 +31,24 @@ export default function EditPost() {
       navigate(`/posts/${id}`);
     } catch (error) {
       console.error("Error updating post:", error);
+      setError("Failed to update post.");
     }
   };
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", mt: 6 }}>
-      <Typography variant="h5" fontWeight="600" mb={3} color="primary">
-        Edit a Post
-      </Typography>
-      <Paper sx={{ p: 3, cursor: "pointer", "&:hover": { boxShadow: 8 } }}>
-        <PostForm
-          buttonText="Update Post"
-          onSubmit={handleUpdatePost}
-          initialTitle={title}
-          initialContent={content}
-        />
-      </Paper>
+      <Card variant="outlined" sx={{ p: 2, "&:hover": { boxShadow: 8 } }}>
+        <CardHeader title="Edit Post" />
+        <CardContent>
+          {error && <Alert severity="error">{error}</Alert>}{" "}
+          <PostForm
+            buttonText="Submit"
+            onSubmit={handleUpdatePost}
+            initialTitle={title}
+            initialContent={content}
+          />
+        </CardContent>
+      </Card>
     </Box>
   );
 }

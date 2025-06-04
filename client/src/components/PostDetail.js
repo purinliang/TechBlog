@@ -73,7 +73,10 @@ export default function PostDetail() {
   }
 
   return (
-    <Card sx={{ maxWidth: 800, margin: "20px auto", p: 2 }}>
+    <Card
+      variant="outlined"
+      sx={{ maxWidth: 800, p: 2, "&:hover": { boxShadow: 8 } }}
+    >
       <CardContent>
         <Typography variant="h4" component="h2" gutterBottom color="primary">
           {post.title}
