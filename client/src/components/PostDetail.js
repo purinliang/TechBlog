@@ -23,6 +23,7 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -43,14 +44,15 @@ export default function PostDetail() {
     try {
       await deletePost(id);
       navigate("/");
+      setOpenDialog(false);
     } catch (error) {
       console.error("Error deleting post:", error);
+      setDeleteError("Failed to delete the post. Please try again.");
     }
   };
 
   const handleConfirmDelete = () => {
     handleDelete();
-    setOpenDialog(false);
   };
 
   if (loading) {
@@ -105,6 +107,7 @@ export default function PostDetail() {
             Are you sure you want to delete this post? This action cannot be
             undone.
           </DialogContentText>
+          {deleteError && <Alert severity="error">{deleteError}</Alert>}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)} color="primary">
