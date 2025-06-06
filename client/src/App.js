@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import UserStatusButton from "./components/UserStatusButton";
+import UserStatus from "./components/UserStatusButton";
 
 export default function App() {
   const theme = useTheme();
@@ -85,7 +85,7 @@ export default function App() {
           >
             TechBlog
           </Typography>
-          <UserStatusButton />
+          <UserStatus />
         </Toolbar>
       </AppBar>
 
