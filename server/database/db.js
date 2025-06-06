@@ -29,7 +29,7 @@ const connectDatabase = async () => {
 
     dbClient = createClient(supabaseUrl, supabaseKey);
     dbType = "supabase";
-    console.log("Using Supabase");
+    console.log("✅ Using Supabase");
   }
 
   if (useLocalPostgres) {
@@ -42,7 +42,7 @@ const connectDatabase = async () => {
     dbClient = new Client({ connectionString: localUrl });
     await dbClient.connect();
     dbType = "postgres";
-    console.log("Using local PostgreSQL");
+    console.log("✅ Using local PostgreSQL");
   }
 
   return { dbClient, dbType };
