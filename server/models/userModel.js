@@ -30,7 +30,14 @@ const UserModel = {
         .select("*")
         .eq("username", username)
         .single();
-      if (error) throw error;
+
+      if (error) {
+        if (error.code == "PGRST116") {
+          return null; // user not exist
+        } else {
+          throw error;
+        }
+      }
       return data;
     } else {
       const result = await dbClient.query(
