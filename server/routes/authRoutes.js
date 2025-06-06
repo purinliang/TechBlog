@@ -8,7 +8,7 @@ require("dotenv").config();
 const SECRET = process.env.JWT_SECRET_KEY;
 
 function isValidUsername(username) {
-  return /^[a-zA-Z0-9_]{6,20}$/.test(username);
+  return /^[a-zA-Z0-9_]{3,18}$/.test(username);
 }
 
 function isValidPassword(password) {
@@ -33,12 +33,16 @@ router.post("/register", async (req, res) => {
     });
 
   try {
+    console.log("go");
     const existingUser = await UserModel.getByUsername(username);
+    console.log(existingUser);
     if (existingUser)
       return res.status(409).json({ message: "Username already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
     const user = await UserModel.create(username, hashedPassword);
+    console.log(user);
 
     const token = jwt.sign(
       { userId: user.id, username: user.username },
