@@ -104,6 +104,7 @@ REACT_APP_API_BASE=http://localhost:5000
 ```bash
 # server/.env
 PORT=5000
+JWT_SECRET_KEY=YOUR_JWT_SECRET_KEY
 ```
 
 ### 3. Start the backend
