@@ -25,12 +25,17 @@ export default function PostDetail() {
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const fetchedPost = await getPostById(id);
         setPost(fetchedPost);
+        const username = localStorage.getItem("username");
+        if (fetchedPost?.author_username && username) {
+          setIsAuthor(fetchedPost.author_username === username);
+        }
       } catch (error) {
         console.error("Error fetching post:", error);
         setError("Post not found.");
@@ -87,21 +92,26 @@ export default function PostDetail() {
           </Typography>
           <ReactMarkdown>{post.content}</ReactMarkdown>
         </CardContent>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => navigate(`/edit_post/${id}`)}
-          sx={{ mr: 2 }}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() => setOpenDialog(true)}
-        >
-          Delete
-        </Button>
+
+        {isAuthor && (
+          <>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => navigate(`/edit_post/${id}`)}
+              sx={{ mr: 2 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => setOpenDialog(true)}
+            >
+              Delete
+            </Button>
+          </>
+        )}
 
         <Dialog
           open={openDialog}
