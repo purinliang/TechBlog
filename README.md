@@ -59,9 +59,29 @@ All API routes are prefixed with `/posts`.
 
 ## Implementation Details
 
-**Backend Route File:** `server/routes/postRoutes.js`
+### 🔐 Auth
 
-**Frontend API File:** `client/src/postApi.js`
+User registration and login are handled through dedicated API routes (`/auth/register` and `/auth/login`) using `bcryptjs` for secure password hashing and `jsonwebtoken` (JWT) for stateless authentication.
+
+- During registration, passwords are hashed before being stored in the database.
+
+- After a successful login or registration, a JWT token containing the `userId` and `username` is generated and returned to the frontend.
+
+- This token is stored in the frontend (e.g., `localStorage`) and used in future requests to access protected routes.
+
+The frontend uses an `authApi` module to communicate with these routes and handle token-based authentication flow.
+
+### 📝 Post
+
+Post creating, updating, and deleting are implemented in `postRoutes.js` and protected by JWT-based middleware.
+
+- Only authenticated users can create new posts.
+
+- For updating or deleting a post, the server checks whether the `userId` extracted from the JWT token matches the `author_id` of the post.
+
+- The frontend attaches the JWT token to each request that modifies post data, ensuring proper access control.
+
+API calls related to posts are managed in the frontend via the `postApi` module.
 
 ## Installation & Local Development
 
