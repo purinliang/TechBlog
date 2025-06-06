@@ -67,6 +67,13 @@ export default function PostList() {
                 >
                   {post.title}
                 </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
+                  By {post.author_username || "Unknown"}
+                </Typography>
                 <Typography variant="body2" color="text.secondary" noWrap>
                   {post.content.length > 100
                     ? post.content.slice(0, 100) + "..."

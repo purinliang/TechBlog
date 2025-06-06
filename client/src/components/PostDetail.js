@@ -48,7 +48,7 @@ export default function PostDetail() {
       setOpenDialog(false);
     } catch (error) {
       console.error("Error deleting post:", error);
-      setDeleteError("Failed to delete the post. Please try again.");
+      setDeleteError("Failed to delete the post: " + error);
     }
   };
 
@@ -81,6 +81,9 @@ export default function PostDetail() {
         <CardContent>
           <Typography variant="h4" component="h2" gutterBottom color="primary">
             {post.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            By {post.author_username || "Unknown"}
           </Typography>
           <ReactMarkdown>{post.content}</ReactMarkdown>
         </CardContent>

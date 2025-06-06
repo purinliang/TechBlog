@@ -1,5 +1,5 @@
 import PostForm from "../components/PostForm";
-import { Box, Card, CardHeader, CardContent, Alert } from "@mui/material";
+import { Card, CardHeader, CardContent, Alert } from "@mui/material";
 import { createPost } from "../apis/postApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -14,7 +14,7 @@ export default function NewPost() {
       navigate("/");
     } catch (error) {
       console.error("Error creating post:", error);
-      setError("Failed to creat post.");
+      setError("Failed to creat post: " + error);
     }
   };
 
@@ -26,9 +26,9 @@ export default function NewPost() {
       >
         <CardHeader title="Create a New Post" />
         <CardContent>
-          {error && <Alert severity="error">{error}</Alert>}{" "}
           <PostForm buttonText="Submit" onSubmit={handleCreatePost} />
         </CardContent>
+        {error && <Alert severity="error">{error}</Alert>}{" "}
       </Card>
     </>
   );

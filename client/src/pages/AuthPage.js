@@ -18,7 +18,7 @@ export default function AuthPage() {
   const [mode, setMode] = useState("login"); // "login" or "register"
   const [inputUsername, setInputUsername] = useState("");
   const [inputPassword, setInputPassword] = useState("");
-  const { username, setUsername } = useUser();
+  const { setUsername } = useUser();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
