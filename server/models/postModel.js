@@ -15,12 +15,14 @@ const PostModel = {
         author_username: post.profiles?.username || "Unknown",
       }));
     } else {
-      const result = await dbClient.query(`
+      const result = await dbClient.query(
+        `
         SELECT posts.*, profiles.username AS author_username
         FROM posts
         LEFT JOIN profiles ON posts.author_id = profiles.id
         ORDER BY posts.created_at DESC;
-      `);
+        `
+      );
       return result.rows;
     }
   },
@@ -31,15 +33,24 @@ const PostModel = {
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
-        .select("*")
+        .select("*, profiles(username)")
         .eq("id", id)
         .single();
       if (error) throw error;
-      return data;
+      return {
+        ...data,
+        author_username: data.profiles?.username || "Unknown",
+      };
     } else {
-      const result = await dbClient.query("SELECT * FROM posts WHERE id = $1", [
-        id,
-      ]);
+      const result = await dbClient.query(
+        `
+        SELECT posts.*, profiles.username AS author_username
+        FROM posts
+        LEFT JOIN profiles ON posts.author_id = profiles.id
+        WHERE posts.id = $1;
+        `,
+        [id]
+      );
       return result.rows[0];
     }
   },

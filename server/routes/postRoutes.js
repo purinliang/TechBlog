@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const PostModel = require("../models/postModel");
+const verifyToken = require("../middleware/auth");
 
 const logRequest = (req) => {
-  console.log(`Received ${req.method} request for: ${req.originalUrl}: ${req}`);
+  console.log(`Received ${req.method} request for: ${req.originalUrl}`);
 };
 
 router.get("/", async (req, res) => {
@@ -25,7 +26,6 @@ router.get("/:id", async (req, res) => {
   try {
     const post = await PostModel.getById(req.params.id);
     if (!post) {
-      console.warn(`Post not found for ID: ${req.params.id}`);
       return res.status(404).json({ error: "Post not found" });
     }
     res.json(post);
@@ -35,16 +35,17 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   logRequest(req);
+  console.log(req);
   const { title, content } = req.body;
+
   if (!title || !content) {
-    console.warn("Missing title or content");
-    return res.status(400).json({ error: "Missing title or content" });
+    return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
-    const result = await PostModel.create(title, content);
+    const result = await PostModel.create(title, content, req.user.userId);
     res.status(201).json({ id: result.id });
     console.log(`Post created with ID: ${result.id}`);
   } catch (err) {
@@ -53,13 +54,26 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   logRequest(req);
-  if (!req.params.id) {
-    return res.status(400).json({ error: "Post ID is required." });
-  }
   const { title, content } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
   try {
+    const post = await PostModel.getById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.author_id !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to modify this post" });
+    }
+
     const result = await PostModel.update(req.params.id, title, content);
     res.json(result);
     console.log(`Post updated with ID: ${req.params.id}`);
@@ -69,12 +83,25 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   logRequest(req);
+
   if (!req.params.id) {
     return res.status(400).json({ error: "Post ID is required." });
   }
+
   try {
+    const post = await PostModel.getById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.author_id !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this post" });
+    }
+
     const result = await PostModel.delete(req.params.id);
     res.json(result);
     console.log(`Post deleted with ID: ${req.params.id}`);
