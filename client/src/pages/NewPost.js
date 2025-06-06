@@ -19,14 +19,17 @@ export default function NewPost() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 6 }}>
-      <Card variant="outlined" sx={{ p: 2, "&:hover": { boxShadow: 8 } }}>
+    <>
+      <Card
+        variant="outlined"
+        sx={{ p: 2, "&:hover": { boxShadow: 8 }, gap: 3 }}
+      >
         <CardHeader title="Create a New Post" />
         <CardContent>
           {error && <Alert severity="error">{error}</Alert>}{" "}
           <PostForm buttonText="Submit" onSubmit={handleCreatePost} />
         </CardContent>
       </Card>
-    </Box>
+    </>
   );
 }

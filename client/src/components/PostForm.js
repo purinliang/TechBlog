@@ -33,8 +33,6 @@ export default function PostForm({
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        maxWidth: 800,
-        mx: "auto",
         display: "flex",
         flexDirection: "column",
         gap: 3,

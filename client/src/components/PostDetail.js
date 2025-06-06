@@ -73,54 +73,56 @@ export default function PostDetail() {
   }
 
   return (
-    <Card
-      variant="outlined"
-      sx={{ maxWidth: 800, p: 2, "&:hover": { boxShadow: 8 } }}
-    >
-      <CardContent>
-        <Typography variant="h4" component="h2" gutterBottom color="primary">
-          {post.title}
-        </Typography>
-        <ReactMarkdown>{post.content}</ReactMarkdown>
-      </CardContent>
-      <Button
+    <>
+      <Card
         variant="outlined"
-        color="primary"
-        onClick={() => navigate(`/edit_post/${id}`)}
-        sx={{ mr: 2 }}
+        sx={{ maxWidth: 1000, p: 2, "&:hover": { boxShadow: 8 } }}
       >
-        Edit
-      </Button>
-      <Button
-        variant="outlined"
-        color="error"
-        onClick={() => setOpenDialog(true)}
-      >
-        Delete
-      </Button>
+        <CardContent>
+          <Typography variant="h4" component="h2" gutterBottom color="primary">
+            {post.title}
+          </Typography>
+          <ReactMarkdown>{post.content}</ReactMarkdown>
+        </CardContent>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => navigate(`/edit_post/${id}`)}
+          sx={{ mr: 2 }}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => setOpenDialog(true)}
+        >
+          Delete
+        </Button>
 
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        sx={{ p: 4 }}
-      >
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this post? This action cannot be
-            undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDelete} color="error">
-            Delete
-          </Button>
-        </DialogActions>
-        {deleteError && <Alert severity="error">{deleteError}</Alert>}
-      </Dialog>
-    </Card>
+        <Dialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          sx={{ p: 4 }}
+        >
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this post? This action cannot be
+              undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmDelete} color="error">
+              Delete
+            </Button>
+          </DialogActions>
+          {deleteError && <Alert severity="error">{deleteError}</Alert>}
+        </Dialog>
+      </Card>
+    </>
   );
 }

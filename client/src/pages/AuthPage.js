@@ -36,7 +36,7 @@ export default function AuthPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto", mt: 6 }}>
+    <>
       <Card variant="outlined" sx={{ p: 2, "&:hover": { boxShadow: 6 } }}>
         <CardHeader title={mode === "login" ? "Login" : "Register"} />
         <CardContent>
@@ -81,6 +81,6 @@ export default function AuthPage() {
           </Box>
         </CardContent>
       </Card>
-    </Box>
+    </>
   );
 }

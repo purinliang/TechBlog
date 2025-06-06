@@ -36,8 +36,11 @@ export default function EditPost() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 6 }}>
-      <Card variant="outlined" sx={{ p: 2, "&:hover": { boxShadow: 8 } }}>
+    <>
+      <Card
+        variant="outlined"
+        sx={{ p: 2, "&:hover": { boxShadow: 8 }, gap: 3 }}
+      >
         <CardHeader title="Edit Post" />
         <CardContent>
           {error && <Alert severity="error">{error}</Alert>}{" "}
@@ -49,6 +52,6 @@ export default function EditPost() {
           />
         </CardContent>
       </Card>
-    </Box>
+    </>
   );
 }
