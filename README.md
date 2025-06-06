@@ -3,6 +3,12 @@
 A full-stack blog platform where users can view, create, update, and delete blog posts.
 This project provides a user-friendly interface and seamless interaction between frontend and backend.
 
+**Repo:** https://github.com/purinliang/TechBlog
+
+**Frontend (Render):** https://techblog-frontend-tue4.onrender.com/
+
+**Backend (Render):** https://techblog-backend-gcyj.onrender.com/
+
 ## Tech Stack & Architecture
 
 ```plain
