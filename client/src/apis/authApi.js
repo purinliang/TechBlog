@@ -10,7 +10,7 @@ export async function registerUser({ username, password }) {
     const errorData = await res.json();
     throw new Error(errorData.message || "Registration failed");
   }
-  return res.json(); // maybe return token or user info
+  return res.json();
 }
 
 export async function loginUser({ username, password }) {
@@ -23,5 +23,5 @@ export async function loginUser({ username, password }) {
     const errorData = await res.json();
     throw new Error(errorData.message || "Login failed");
   }
-  return res.json(); // maybe return token or user info
+  return res.json();
 }

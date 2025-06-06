@@ -7,13 +7,21 @@ const PostModel = {
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
-        .select("*")
+        .select("*, profiles(username)")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data.map((post) => ({
+        ...post,
+        author_username: post.profiles?.username || "Unknown",
+      }));
     } else {
       const result = await dbClient.query(
-        "SELECT * FROM posts ORDER BY created_at DESC"
+        `
+        SELECT posts.*, profiles.username AS author_username
+        FROM posts
+        LEFT JOIN profiles ON posts.author_id = profiles.id
+        ORDER BY posts.created_at DESC;
+        `
       );
       return result.rows;
     }
@@ -25,34 +33,42 @@ const PostModel = {
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
-        .select("*")
+        .select("*, profiles(username)")
         .eq("id", id)
         .single();
       if (error) throw error;
-      return data;
+      return {
+        ...data,
+        author_username: data.profiles?.username || "Unknown",
+      };
     } else {
-      const result = await dbClient.query("SELECT * FROM posts WHERE id = $1", [
-        id,
-      ]);
+      const result = await dbClient.query(
+        `
+        SELECT posts.*, profiles.username AS author_username
+        FROM posts
+        LEFT JOIN profiles ON posts.author_id = profiles.id
+        WHERE posts.id = $1;
+        `,
+        [id]
+      );
       return result.rows[0];
     }
   },
 
-  create: async (title, content) => {
+  create: async (title, content, author_id) => {
     const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
-        .insert({ title, content })
+        .insert({ title, content, author_id })
         .select()
         .single();
       if (error) throw error;
       return { id: data.id };
     } else {
       const result = await dbClient.query(
-        "INSERT INTO posts (title, content) VALUES ($1, $2) RETURNING id",
-        [title, content]
+        "INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3) RETURNING id",
+        [title, content, author_id]
       );
       return { id: result.rows[0].id };
     }

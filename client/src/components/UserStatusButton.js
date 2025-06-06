@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
+import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../UserContext";
 
-export default function UserStatusButton() {
-  const [username, setUsername] = useState(null);
+export default function UserStatus() {
+  const { username, setUsername } = useUser();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("username");
-    setUsername(storedUser);
-  }, []);
 
   const handleClick = () => {
     if (username) {
-      navigate("/auth");
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      setUsername(null);
     } else {
       navigate("/auth");
     }
   };
 
   return (
-    <Button variant="outlined" onClick={handleClick} color="inherit">
-      {username ? username : "Login"}
-    </Button>
+    <Box display="flex" alignItems="center">
+      {username && (
+        <Typography variant="body1" sx={{ marginRight: 2 }}>
+          {`Welcome, ${username}`}
+        </Typography>
+      )}
+      <Button variant="outlined" onClick={handleClick} color="inherit">
+        {username ? "Logout" : "Login / Register"}
+      </Button>
+    </Box>
   );
 }

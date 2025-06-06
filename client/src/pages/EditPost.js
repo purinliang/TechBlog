@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, updatePost } from "../apis/postApi";
-import { Box, Card, CardHeader, CardContent, Alert } from "@mui/material";
+import { Card, CardHeader, CardContent, Alert } from "@mui/material";
 import PostForm from "../components/PostForm";
 
 export default function EditPost() {
@@ -31,7 +31,7 @@ export default function EditPost() {
       navigate(`/posts/${id}`);
     } catch (error) {
       console.error("Error updating post:", error);
-      setError("Failed to update post.");
+      setError("Failed to update post: " + error);
     }
   };
 
@@ -43,7 +43,6 @@ export default function EditPost() {
       >
         <CardHeader title="Edit Post" />
         <CardContent>
-          {error && <Alert severity="error">{error}</Alert>}{" "}
           <PostForm
             buttonText="Submit"
             onSubmit={handleUpdatePost}
@@ -51,6 +50,7 @@ export default function EditPost() {
             initialContent={content}
           />
         </CardContent>
+        {error && <Alert severity="error">{error}</Alert>}{" "}
       </Card>
     </>
   );
