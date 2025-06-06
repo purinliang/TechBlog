@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../UserContext";
 
 export default function UserStatusButton() {
-  const [username, setUsername] = useState(null);
+  const { username, setUsername } = useUser();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("username");
-    setUsername(storedUser);
-  }, []);
 
   const handleClick = () => {
     if (username) {
-      navigate("/auth");
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      setUsername(null);
     } else {
       navigate("/auth");
     }
   };
 
+  console.log("button:" + username);
+
   return (
     <Button variant="outlined" onClick={handleClick} color="inherit">
-      {username ? username : "Login"}
+      {username ? `Logout (${username})` : "Login / Register"}
     </Button>
   );
 }
