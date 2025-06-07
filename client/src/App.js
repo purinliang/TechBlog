@@ -19,7 +19,7 @@ import UserStatus from "./components/UserStatusButton";
 
 export default function App() {
   const theme = useTheme();
-  const isDesktop = useMediaQuery("(min-width:1440px)");
+  const isDesktop = false;
   const [mobileOpen, setMobileOpen] = useState(false);
   const toggleMobileDrawer = () => setMobileOpen((prev) => !prev);
 
@@ -128,6 +128,7 @@ export default function App() {
         sx={{
           flexGrow: 1,
           mt: 8,
+          mb: 16,
           px: 2,
         }}
       >

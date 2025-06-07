@@ -8,6 +8,7 @@ import {
   Typography,
   CircularProgress,
   Box,
+  Link,
   Alert,
   Dialog,
   DialogActions,
@@ -84,34 +85,71 @@ export default function PostDetail() {
         sx={{ maxWidth: 1000, p: 2, "&:hover": { boxShadow: 8 } }}
       >
         <CardContent>
-          <Typography variant="h4" component="h2" gutterBottom color="primary">
+          <Typography
+            variant="h4"
+            color="primary"
+            fontWeight="600"
+            gutterBottom
+          >
             {post.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            By {post.author_username || "Unknown"}
-          </Typography>
           <ReactMarkdown>{post.content}</ReactMarkdown>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
+            by {post.author_username || "Unknown"}, at{" "}
+            {new Date(post.created_at).toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })}
+          </Typography>
+          {isAuthor && (
+            <Box sx={{ mt: 3 }}>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Typography color="text.secondary" gutterBottom>
+                  You are the author, you can:
+                </Typography>
+                <Link
+                  variant="text"
+                  color="primary"
+                  onClick={() => navigate(`/edit_post/${id}`)}
+                  disableRipple
+                  sx={{
+                    textTransform: "none",
+                    textDecoration: "underline",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Edit
+                </Link>
+                <Typography color="text.secondary" gutterBottom>
+                  or
+                </Typography>
+                <Link
+                  variant="text"
+                  color="error"
+                  onClick={() => setOpenDialog(true)}
+                  disableRipple
+                  sx={{
+                    textTransform: "none",
+                    textDecoration: "underline",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Delete
+                </Link>
+              </Box>
+            </Box>
+          )}
         </CardContent>
-
-        {isAuthor && (
-          <>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate(`/edit_post/${id}`)}
-              sx={{ mr: 2 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => setOpenDialog(true)}
-            >
-              Delete
-            </Button>
-          </>
-        )}
 
         <Dialog
           open={openDialog}

@@ -14,8 +14,13 @@ export default function PostList() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showLoadingTip, setShowLoadingTip] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoadingTip(true);
+    }, 3000);
+
     const fetchPosts = async () => {
       try {
         const fetchedPosts = await getPosts();
@@ -24,6 +29,7 @@ export default function PostList() {
         console.error("Error fetching posts:", error);
         setError("Failed to load posts.");
       } finally {
+        clearTimeout(timer);
         setLoading(false);
       }
     };
@@ -32,8 +38,21 @@ export default function PostList() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mt: 4,
+        }}
+      >
         <CircularProgress />
+        {showLoadingTip && (
+          <Typography variant="body2" color="text.secondary" mt={2}>
+            It may take around 15 seconds to start the backend if it's been
+            idle.
+          </Typography>
+        )}
       </Box>
     );
   }
@@ -41,15 +60,31 @@ export default function PostList() {
   if (error) {
     return (
       <Box sx={{ mt: 4 }}>
-        <Alert severity="error">{error}</Alert>
+        <Alert
+          severity="error"
+          sx={{
+            py: 1,
+            fontSize: "1rem",
+          }}
+        >
+          {error}
+        </Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 4, mt: 2 }}>
       {posts.length === 0 ? (
-        <Alert severity="info">No posts available.</Alert>
+        <Alert
+          severity="info"
+          sx={{
+            py: 1,
+            fontSize: "1rem",
+          }}
+        >
+          No posts available. You can login/register and add your first post!
+        </Alert>
       ) : (
         posts.map((post) => (
           <Card
@@ -70,14 +105,30 @@ export default function PostList() {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ mb: 1 }}
+                  sx={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
                 >
-                  By {post.author_username || "Unknown"}
+                  {post.content}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" noWrap>
-                  {post.content.length > 100
-                    ? post.content.slice(0, 100) + "..."
-                    : post.content}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 3 }}
+                >
+                  by {post.author_username || "Unknown"}, at{" "}
+                  {new Date(post.created_at).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </Typography>
               </CardContent>
             </Link>
