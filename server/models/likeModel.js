@@ -1,48 +1,47 @@
 const { connectDatabase } = require("../database/db");
 
 const LikeModel = {
-  getLikesCount: async (postId) => {
-    const { dbClient, dbType } = await connectDatabase();
+  //   getLikesCount: async (postId) => {
+  //     const { dbClient, dbType } = await connectDatabase();
 
-    if (dbType === "supabase") {
-      const { count, error } = await dbClient
-        .from("likes")
-        .select("*", { count: "exact", head: true })
-        .eq("post_id", postId);
-      if (error) throw error;
-      console.log(count);
-      return count;
-    } else {
-      const result = await dbClient.query(
-        "SELECT COUNT(*) FROM likes WHERE post_id = $1",
-        [postId]
-      );
-      return parseInt(result.rows[0].count, 10);
-    }
-  },
+  //     if (dbType === "supabase") {
+  //       const { count, error } = await dbClient
+  //         .from("likes")
+  //         .select("*", { count: "exact", head: true })
+  //         .eq("post_id", postId);
+  //       if (error) throw error;
+  //       return count;
+  //     } else {
+  //       const result = await dbClient.query(
+  //         "SELECT COUNT(*) FROM likes WHERE post_id = $1",
+  //         [postId]
+  //       );
+  //       return parseInt(result.rows[0].count, 10);
+  //     }
+  //   },
 
-  checkIfLiked: async (postId, userId) => {
-    const { dbClient, dbType } = await connectDatabase();
+  //   checkIfLiked: async (postId, userId) => {
+  //     const { dbClient, dbType } = await connectDatabase();
 
-    if (dbType === "supabase") {
-      const { data, error } = await dbClient
-        .from("likes")
-        .select("id")
-        .eq("post_id", postId)
-        .eq("user_id", userId)
-        .limit(1)
-        .single();
+  //     if (dbType === "supabase") {
+  //       const { data, error } = await dbClient
+  //         .from("likes")
+  //         .select("id")
+  //         .eq("post_id", postId)
+  //         .eq("user_id", userId)
+  //         .limit(1)
+  //         .single();
 
-      if (error && error.code !== "PGRST116") throw error;
-      return !!data;
-    } else {
-      const result = await dbClient.query(
-        "SELECT 1 FROM likes WHERE post_id = $1 AND user_id = $2 LIMIT 1",
-        [postId, userId]
-      );
-      return result.rowCount > 0;
-    }
-  },
+  //       if (error && error.code !== "PGRST116") throw error;
+  //       return !!data;
+  //     } else {
+  //       const result = await dbClient.query(
+  //         "SELECT 1 FROM likes WHERE post_id = $1 AND user_id = $2 LIMIT 1",
+  //         [postId, userId]
+  //       );
+  //       return result.rowCount > 0;
+  //     }
+  //   },
 
   addLike: async (postId, userId) => {
     const { dbClient, dbType } = await connectDatabase();

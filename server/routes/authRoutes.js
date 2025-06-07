@@ -15,7 +15,13 @@ function isValidPassword(password) {
   return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,32}$/.test(password);
 }
 
+const logRequest = (req) => {
+  console.log(`Received ${req.method} request for: ${req.originalUrl}`);
+};
+
 router.post("/register", async (req, res) => {
+  logRequest(req);
+
   const { username, password } = req.body;
 
   if (!username || !password)
@@ -43,7 +49,7 @@ router.post("/register", async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, username: user.username },
       SECRET,
-      { expiresIn: "30min" }
+      { expiresIn: "1d" }
     );
 
     res.status(201).json({
@@ -58,6 +64,8 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  logRequest(req);
+
   const { username, password } = req.body;
 
   if (!username || !password)
@@ -79,7 +87,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, username: user.username },
       SECRET,
-      { expiresIn: "30min" }
+      { expiresIn: "1d" }
     );
 
     res.json({ message: "Login successful", token, username: user.username });

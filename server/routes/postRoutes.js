@@ -4,14 +4,15 @@ const PostModel = require("../models/postModel");
 const verifyToken = require("../middleware/auth");
 
 const logRequest = (req) => {
-  // console.log(`Received ${req.method} request for: ${req.originalUrl}`);
+  console.log(`Received ${req.method} request for: ${req.originalUrl}`);
 };
 
-router.get("/", async (req, res) => {
+router.get("/", verifyToken.optional, async (req, res) => {
   logRequest(req);
-  
+
+  const userId = req.user?.userId || null;
   try {
-    const posts = await PostModel.getAll();
+    const posts = await PostModel.getAll(userId);
     res.json(posts);
   } catch (err) {
     console.error(`Error fetching posts: ${err.message}`);
@@ -19,14 +20,16 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", verifyToken.optional, async (req, res) => {
   logRequest(req);
 
   if (!req.params.id) {
     return res.status(400).json({ error: "Post ID is required." });
   }
+
   try {
-    const post = await PostModel.getById(req.params.id);
+    const userId = req.user?.userId || null;
+    const post = await PostModel.getById(req.params.id, userId);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }

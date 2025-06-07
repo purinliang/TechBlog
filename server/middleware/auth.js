@@ -19,4 +19,20 @@ function verifyToken(req, res, next) {
   }
 }
 
+verifyToken.optional = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return next();
+
+  const token = authHeader.split(" ")[1];
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    req.user = decoded;
+  } catch (err) {
+    console.log("Invalid or expired token in verifyToken.optional");
+  }
+  next();
+};
+
 module.exports = verifyToken;

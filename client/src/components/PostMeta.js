@@ -12,7 +12,7 @@ export default function PostMeta({
   postId,
   commentCount,
 }) {
-  const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
+  const [likeCount, setLikeCount] = useState(Number(initialLikeCount) || 0);
   const [liked, setLiked] = useState(initiallyLiked || false);
 
   const handleLikeClick = async () => {

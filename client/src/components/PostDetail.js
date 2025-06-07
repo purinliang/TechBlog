@@ -34,26 +34,28 @@ export default function PostDetail() {
     const fetchPost = async () => {
       try {
         const fetchedPost = await getPostById(id);
+        setPost(fetchedPost);
 
-        let count = 0;
-        let liked = false;
-        const token = localStorage.getItem("token");
+        // let count = 0;
+        // let liked = false;
+        // const token = localStorage.getItem("token");
 
-        if (token) {
-          const likeStatus = await getLikeStatus(id);
-          count = Number(likeStatus.count) || 0;
-          liked = !!likeStatus.likedByCurrentUser;
-        } else {
-          const likeRes = await getLikeCount(id);
-          count = Number(likeRes.likes) || 0;
-        }
+        // if (token) {
+        //   const likeStatus = await getLikeStatus(id);
+        //   count = Number(likeStatus.count) || 0;
+        //   liked = !!likeStatus.likedByCurrentUser;
+        // } else {
+        //   const likeRes = await getLikeCount(id);
+        //   count = Number(likeRes.likes) || 0;
+        // }
 
-        setPost({ ...fetchedPost, likeCount: count, liked });
+        // setPost({ ...fetchedPost, likeCount: count, liked });
         const username = localStorage.getItem("username");
         if (fetchedPost?.author_username && username) {
           setIsAuthor(fetchedPost.author_username === username);
         }
       } catch (error) {
+        // TODO: ignore token expired error
         console.error("Error fetching post:", error);
         setError("Post not found.");
       } finally {
@@ -114,8 +116,8 @@ export default function PostDetail() {
             author={post.author_username}
             createdAt={post.created_at}
             postId={id}
-            initialLikeCount={post.likeCount}
-            initiallyLiked={post.liked}
+            initialLikeCount={post.like_count}
+            initiallyLiked={post.liked_by_current_user}
           />
 
           {isAuthor && (

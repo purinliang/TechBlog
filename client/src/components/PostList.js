@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { getPosts } from "../apis/postApi";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
+import { Typography, Box, Alert, CircularProgress } from "@mui/material";
+import PostCard from "../components/PostCard";
 
 export default function PostList() {
   const [posts, setPosts] = useState([]);
@@ -76,64 +69,11 @@ export default function PostList() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4, mt: 2 }}>
       {posts.length === 0 ? (
-        <Alert
-          severity="info"
-          sx={{
-            py: 1,
-            fontSize: "1rem",
-          }}
-        >
+        <Alert severity="info" sx={{ py: 1, fontSize: "1rem" }}>
           No posts available. You can login/register and add your first post!
         </Alert>
       ) : (
-        posts.map((post) => (
-          <Card
-            key={post.id}
-            variant="outlined"
-            sx={{ cursor: "pointer", "&:hover": { boxShadow: 8 } }}
-          >
-            <Link to={`/posts/${post.id}`} style={{ textDecoration: "none" }}>
-              <CardContent>
-                <Typography
-                  variant="h6"
-                  color="primary"
-                  fontWeight="600"
-                  gutterBottom
-                >
-                  {post.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {post.content}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 3 }}
-                >
-                  by {post.author_username || "Unknown"}, at{" "}
-                  {new Date(post.created_at).toLocaleString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </Typography>
-              </CardContent>
-            </Link>
-          </Card>
-        ))
+        posts.map((post) => <PostCard key={post.id} post={post} />)
       )}
     </Box>
   );

@@ -1,55 +1,145 @@
 const { connectDatabase } = require("../database/db");
 
 const PostModel = {
-  getAll: async () => {
+  getAll: async (userId = null) => {
     const { dbClient, dbType } = await connectDatabase();
 
     if (dbType === "supabase") {
-      const { data, error } = await dbClient
+      let query = dbClient
         .from("posts")
-        .select("*, profiles(username)")
+        .select(
+          `
+          *,
+          profiles(username),
+          likes(count),
+          user_likes:likes!inner(user_id)
+        `
+        )
         .order("created_at", { ascending: false });
+
+      if (!userId) {
+        query = dbClient
+          .from("posts")
+          .select(
+            `
+            *,
+            profiles(username),
+            likes(count)
+          `
+          )
+          .order("created_at", { ascending: false });
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
+
       return data.map((post) => ({
         ...post,
         author_username: post.profiles?.username || "Unknown",
+        like_count: post.likes?.length || 0,
+        liked_by_current_user: userId
+          ? post.user_likes?.some((like) => like.user_id === userId)
+          : false,
       }));
     } else {
       const result = await dbClient.query(
         `
-        SELECT posts.*, profiles.username AS author_username
-        FROM posts
-        LEFT JOIN profiles ON posts.author_id = profiles.id
-        ORDER BY posts.created_at DESC;
-        `
+        SELECT
+          p.*,
+          pr.username AS author_username,
+          COALESCE(lc.like_count, 0) AS like_count,
+          CASE
+            WHEN $1 IS NOT NULL AND ul.user_id IS NOT NULL THEN true
+            ELSE false
+          END AS liked_by_current_user
+        FROM posts p
+        LEFT JOIN profiles pr ON p.author_id = pr.id
+        LEFT JOIN (
+          SELECT post_id, COUNT(*) AS like_count
+          FROM likes
+          GROUP BY post_id
+        ) lc ON p.id = lc.post_id
+        LEFT JOIN (
+          SELECT post_id, user_id
+          FROM likes
+          WHERE user_id = $1
+        ) ul ON p.id = ul.post_id
+        ORDER BY p.created_at DESC;
+        `,
+        [userId]
       );
       return result.rows;
     }
   },
 
-  getById: async (id) => {
+  getById: async (id, userId = null) => {
     const { dbClient, dbType } = await connectDatabase();
 
     if (dbType === "supabase") {
-      const { data, error } = await dbClient
+      let query = dbClient
         .from("posts")
-        .select("*, profiles(username)")
+        .select(
+          `
+          *,
+          profiles(username),
+          likes(count),
+          user_likes:likes!inner(user_id)
+        `
+        )
         .eq("id", id)
         .single();
+
+      if (!userId) {
+        query = dbClient
+          .from("posts")
+          .select(
+            `
+            *,
+            profiles(username),
+            likes(count)
+          `
+          )
+          .eq("id", id)
+          .single();
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
+
       return {
         ...data,
         author_username: data.profiles?.username || "Unknown",
+        like_count: data.likes?.length || 0,
+        liked_by_current_user: userId
+          ? data.user_likes?.some((like) => like.user_id === userId)
+          : false,
       };
     } else {
       const result = await dbClient.query(
         `
-        SELECT posts.*, profiles.username AS author_username
-        FROM posts
-        LEFT JOIN profiles ON posts.author_id = profiles.id
-        WHERE posts.id = $1;
+        SELECT
+          p.*,
+          pr.username AS author_username,
+          COALESCE(lc.like_count, 0) AS like_count,
+          CASE
+            WHEN $2 IS NOT NULL AND ul.user_id IS NOT NULL THEN true
+            ELSE false
+          END AS liked_by_current_user
+        FROM posts p
+        LEFT JOIN profiles pr ON p.author_id = pr.id
+        LEFT JOIN (
+          SELECT post_id, COUNT(*) AS like_count
+          FROM likes
+          GROUP BY post_id
+        ) lc ON p.id = lc.post_id
+        LEFT JOIN (
+          SELECT post_id, user_id
+          FROM likes
+          WHERE user_id = $2
+        ) ul ON p.id = ul.post_id
+        WHERE p.id = $1;
         `,
-        [id]
+        [id, userId]
       );
       return result.rows[0];
     }
