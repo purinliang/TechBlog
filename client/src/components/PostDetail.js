@@ -1,12 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, deletePost } from "../apis/postApi";
-import {
-  getLikeCount,
-  getLikeStatus,
-  likePost,
-  unlikePost,
-} from "../apis/likeApi";
+import { getLikeCount, getLikeStatus } from "../apis/likeApi";
 import PostMeta from "../components/PostMeta";
 import {
   Button,
@@ -35,40 +30,28 @@ export default function PostDetail() {
   const [deleteError, setDeleteError] = useState(null);
   const [isAuthor, setIsAuthor] = useState(false);
 
-  const [likeCount, setLikeCount] = useState(0);
-  const [liked, setLiked] = useState(false);
-
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const fetchedPost = await getPostById(id);
-        setPost(fetchedPost);
-        const username = localStorage.getItem("username");
-        if (fetchedPost?.author_username && username) {
-          setIsAuthor(fetchedPost.author_username === username);
-        }
 
+        let count = 0;
+        let liked = false;
         const token = localStorage.getItem("token");
 
         if (token) {
-          try {
-            const likeStatus = await getLikeStatus(id);
-            setLikeCount(Number(likeStatus.count) || 0);
-            setLiked(!!likeStatus.likedByCurrentUser);
-          } catch (err) {
-            console.error("Failed to fetch like status:", err);
-            setLikeCount(0);
-            setLiked(false);
-          }
+          const likeStatus = await getLikeStatus(id);
+          count = Number(likeStatus.count) || 0;
+          liked = !!likeStatus.likedByCurrentUser;
         } else {
-          try {
-            const likeRes = await getLikeCount(id);
-            setLikeCount(Number(likeRes.likes) || 0);
-            setLiked(false);
-          } catch (err) {
-            console.error("Failed to fetch like count:", err);
-            setLikeCount(0);
-          }
+          const likeRes = await getLikeCount(id);
+          count = Number(likeRes.likes) || 0;
+        }
+
+        setPost({ ...fetchedPost, likeCount: count, liked });
+        const username = localStorage.getItem("username");
+        if (fetchedPost?.author_username && username) {
+          setIsAuthor(fetchedPost.author_username === username);
         }
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -93,23 +76,6 @@ export default function PostDetail() {
 
   const handleConfirmDelete = () => {
     handleDelete();
-  };
-
-  const handleLikeClick = async () => {
-    try {
-      if (liked) {
-        console.log("unlike");
-        await unlikePost(id);
-        setLikeCount((prev) => prev - 1);
-      } else {
-        console.log("like");
-        await likePost(id);
-        setLikeCount((prev) => prev + 1);
-      }
-      setLiked((prev) => !prev);
-    } catch (err) {
-      console.error("Failed to toggle like", err);
-    }
   };
 
   if (loading) {
@@ -147,9 +113,9 @@ export default function PostDetail() {
           <PostMeta
             author={post.author_username}
             createdAt={post.created_at}
-            likeCount={likeCount}
-            liked={liked}
-            onLikeClick={handleLikeClick}
+            postId={id}
+            initialLikeCount={post.likeCount}
+            initiallyLiked={post.liked}
           />
 
           {isAuthor && (
