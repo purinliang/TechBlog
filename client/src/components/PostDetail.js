@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, deletePost } from "../apis/postApi";
-import { getLikeCount, getLikeStatus } from "../apis/likeApi";
 import PostMeta from "../components/PostMeta";
 import {
   Button,

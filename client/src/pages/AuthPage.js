@@ -10,7 +10,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { registerUser, loginUser } from "../apis/authApi";
 import { useUser } from "../UserContext";
 
@@ -21,6 +21,9 @@ export default function AuthPage() {
   const { setUsername } = useUser();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from || "/";
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -40,7 +43,7 @@ export default function AuthPage() {
       localStorage.setItem("token", user.token);
       localStorage.setItem("username", user.username);
       setUsername(user.username);
-      navigate("/");
+      navigate(from);
     } catch (err) {
       console.error("Auth error:", err);
       setError(err.message || "Authentication failed");

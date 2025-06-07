@@ -1,5 +1,5 @@
 import { Box, Typography, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../UserContext";
 
 export default function UserStatus() {
@@ -7,14 +7,16 @@ export default function UserStatus() {
   const localUsername = localStorage.getItem("username");
   setUsername(localUsername);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClick = () => {
     if (username) {
       localStorage.removeItem("token");
       localStorage.removeItem("username");
       setUsername(null);
+      window.location.reload();
     } else {
-      navigate("/auth");
+      navigate("/auth", { state: { from: location.pathname } });
     }
   };
 
