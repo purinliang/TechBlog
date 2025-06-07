@@ -1,5 +1,4 @@
 const { connectDatabase } = require("../database/db");
-
 const PostModel = {
   getAll: async (userId = null) => {
     const { dbClient, dbType } = await connectDatabase();
@@ -11,34 +10,23 @@ const PostModel = {
           `
           *,
           profiles(username),
-          likes(count),
-          user_likes:likes!inner(user_id)
+          likes(user_id)
         `
         )
         .order("created_at", { ascending: false });
 
-      if (!userId) {
-        query = dbClient
-          .from("posts")
-          .select(
-            `
-            *,
-            profiles(username),
-            likes(count)
-          `
-          )
-          .order("created_at", { ascending: false });
-      }
-
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error("post model getAll error: ", error);
+        throw error;
+      }
 
       return data.map((post) => ({
         ...post,
         author_username: post.profiles?.username || "Unknown",
         like_count: post.likes?.length || 0,
         liked_by_current_user: userId
-          ? post.user_likes?.some((like) => like.user_id === userId)
+          ? post.likes?.some((like) => like.user_id === userId)
           : false,
       }));
     } else {
@@ -82,36 +70,24 @@ const PostModel = {
           `
           *,
           profiles(username),
-          likes(count),
-          user_likes:likes!inner(user_id)
+          likes(user_id)
         `
         )
         .eq("id", id)
         .single();
 
-      if (!userId) {
-        query = dbClient
-          .from("posts")
-          .select(
-            `
-            *,
-            profiles(username),
-            likes(count)
-          `
-          )
-          .eq("id", id)
-          .single();
-      }
-
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error("PostModel getById error: ", error);
+        throw error;
+      }
 
       return {
         ...data,
         author_username: data.profiles?.username || "Unknown",
         like_count: data.likes?.length || 0,
         liked_by_current_user: userId
-          ? data.user_likes?.some((like) => like.user_id === userId)
+          ? data.likes?.some((like) => like.user_id === userId)
           : false,
       };
     } else {
