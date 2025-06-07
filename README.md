@@ -206,46 +206,11 @@ sudo systemctl restart postgresql
 
 #### 5.4 Initialize Tables
 
-Log in as the PostgreSQL superuser:
-
-```bash
-sudo -u postgres psql
-```
-
-Switch to your database:
-
-```sql
-\c techblog
-```
-
-Paste in your schema SQL (or run from file `database/init.sql`):
-
-```sql
-\i database/init.sql
-```
-
-Then change table ownership:
-
-```sql
-ALTER TABLE posts OWNER TO techblog_admin;
-ALTER TABLE profiles OWNER TO techblog_admin;
-```
-
-Then Exit with `\q`.
+Please refer to `database/README.md`.
 
 #### 5.5 Test the Connection
 
-```bash
-psql -U techblog_admin -d techblog -W
-```
-
-Once connected, test:
-
-```sql
-\dt
-\d+ posts
-\d+ profiles
-```
+Please refer to `database/README.md`.
 
 #### 5.6 Config backend environment
 
@@ -257,7 +222,11 @@ USE_LOCAL_POSTGRESQL=true
 LOCAL_POSTGRESQL_URL=postgresql://techblog_admin:techblog_password@localhost:5432/techblog
 ```
 
+Make sure only one database method is active at a time.
+
 ### 6. [Optional] Switch to Supabase
+
+#### 6.1 Setup Supabase
 
 Create a supabase account then config the `.env` in `server` with:
 
@@ -267,5 +236,9 @@ USE_SUPABASE=true
 SUPABASE_URL=YOUR_SUPABASE_SERVICE_ROLE_KEY
 SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
 ```
+
+#### 6.2 Initialize Tables
+
+Please refer to `database/README.md`.
 
 Make sure only one database method is active at a time.

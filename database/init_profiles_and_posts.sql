@@ -1,7 +1,3 @@
--- Drop tables if exist
-drop table if exists posts;
-drop table if exists profiles;
-
 -- Users table (simplified, not using Supabase auth.users)
 create table profiles (
   id serial primary key,
@@ -18,3 +14,4 @@ create table posts (
   author_id integer references profiles(id) on delete set null,
   created_at timestamp default current_timestamp
 );
+
