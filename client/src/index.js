@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import App from "./App";
 import Home from "./pages/Home";
+import MyPostsPage from "./pages/MyPostsPage";
 import NewPost from "./pages/NewPost";
 import EditPost from "./pages/EditPost";
 import PostDetail from "./components/PostDetail";
@@ -19,9 +20,10 @@ function Main() {
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
-            <Route path="new_post" element={<NewPost />} />
+            <Route path="myposts" element={<MyPostsPage />} />
+            <Route path="newpost" element={<NewPost />} />
             <Route path="posts/:id" element={<PostDetail />} />
-            <Route path="edit_post/:id" element={<EditPost />} />
+            <Route path="editpost/:id" element={<EditPost />} />
             <Route path="auth" element={<AuthPage />} />
           </Route>
         </Routes>

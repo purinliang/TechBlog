@@ -43,7 +43,18 @@ export default function App() {
         <ListItem
           button
           component={Link}
-          to="/new_post"
+          to="/myposts"
+          onClick={() => !isDesktop && setMobileOpen(false)}
+        >
+          <ListItemText
+            primary="My Posts"
+            primaryTypographyProps={{ color: theme.palette.text.primary }}
+          />
+        </ListItem>
+        <ListItem
+          button
+          component={Link}
+          to="/newpost"
           onClick={() => !isDesktop && setMobileOpen(false)}
         >
           <ListItemText

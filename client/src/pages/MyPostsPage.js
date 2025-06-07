@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
-import { getPosts } from "../apis/postApi";
+import { getMyPosts } from "../apis/postApi";
 import { CircularProgress, Box, Alert } from "@mui/material";
 
-export default function Home() {
+export default function MyPostsPage() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,11 +11,11 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const fetchedPosts = await getPosts();
+        const fetchedPosts = await getMyPosts();
         setPosts(fetchedPosts);
       } catch (error) {
-        console.error("Error fetching posts:", error);
-        setError("Failed to load posts.");
+        console.error("Error fetching my posts:", error);
+        setError("Failed to load my posts.");
       } finally {
         setLoading(false);
       }

@@ -17,6 +17,14 @@ export async function getPosts() {
   return handleResponse(res);
 }
 
+export async function getMyPosts() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/posts/myposts`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return handleResponse(res);
+}
+
 export async function getPostById(id) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/posts/${id}`, {

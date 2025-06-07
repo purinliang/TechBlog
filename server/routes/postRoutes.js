@@ -20,6 +20,19 @@ router.get("/", verifyToken.optional, async (req, res) => {
   }
 });
 
+router.get("/myposts", verifyToken, async (req, res) => {
+  logRequest(req);
+
+  const userId = req.user?.userId;
+  try {
+    const posts = await PostModel.getMyAll(userId);
+    res.json(posts);
+  } catch (err) {
+    console.error(`Error fetching my posts: ${err.message}`);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get("/:id", verifyToken.optional, async (req, res) => {
   logRequest(req);
 

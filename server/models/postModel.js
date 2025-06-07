@@ -60,6 +60,58 @@ const PostModel = {
     }
   },
 
+  getMyAll: async (userId) => {
+    const { dbClient, dbType } = await connectDatabase();
+
+    if (dbType === "supabase") {
+      const { data, error } = await dbClient
+        .from("posts")
+        .select(
+          `
+          *,
+          profiles:profiles(username),
+          likes(user_id)
+          `
+        )
+        .eq("author_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("post model getMyAll error: ", error);
+        throw error;
+      }
+
+      return data.map((post) => ({
+        ...post,
+        author_username: post.profiles?.username || "Unknown",
+        like_count: post.likes?.length || 0,
+        liked_by_current_user: userId
+          ? post.likes?.some((like) => like.user_id === userId)
+          : false,
+      }));
+    } else {
+      const result = await dbClient.query(
+        `
+        SELECT
+          p.*,
+          pr.username AS author_username,
+          COALESCE(lc.like_count, 0) AS like_count
+        FROM posts p
+        LEFT JOIN profiles pr ON p.author_id = pr.id
+        LEFT JOIN (
+          SELECT post_id, COUNT(*) AS like_count
+          FROM likes
+          GROUP BY post_id
+        ) lc ON p.id = lc.post_id
+        WHERE p.author_id = $1
+        ORDER BY p.created_at DESC;
+        `,
+        [userId]
+      );
+      return result.rows;
+    }
+  },
+
   getById: async (id, userId = null) => {
     const { dbClient, dbType } = await connectDatabase();
 
