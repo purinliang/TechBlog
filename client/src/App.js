@@ -10,7 +10,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  useMediaQuery,
   CssBaseline,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
