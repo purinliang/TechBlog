@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, deletePost } from "../apis/postApi";
+import { getLikeCount, getLikeStatus } from "../apis/likeApi";
+import PostMeta from "../components/PostMeta";
 import {
   Button,
   Card,
@@ -8,6 +10,7 @@ import {
   Typography,
   CircularProgress,
   Box,
+  Link,
   Alert,
   Dialog,
   DialogActions,
@@ -32,11 +35,27 @@ export default function PostDetail() {
       try {
         const fetchedPost = await getPostById(id);
         setPost(fetchedPost);
+
+        // let count = 0;
+        // let liked = false;
+        // const token = localStorage.getItem("token");
+
+        // if (token) {
+        //   const likeStatus = await getLikeStatus(id);
+        //   count = Number(likeStatus.count) || 0;
+        //   liked = !!likeStatus.likedByCurrentUser;
+        // } else {
+        //   const likeRes = await getLikeCount(id);
+        //   count = Number(likeRes.likes) || 0;
+        // }
+
+        // setPost({ ...fetchedPost, likeCount: count, liked });
         const username = localStorage.getItem("username");
         if (fetchedPost?.author_username && username) {
           setIsAuthor(fetchedPost.author_username === username);
         }
       } catch (error) {
+        // TODO: ignore token expired error
         console.error("Error fetching post:", error);
         setError("Post not found.");
       } finally {
@@ -84,34 +103,68 @@ export default function PostDetail() {
         sx={{ maxWidth: 1000, p: 2, "&:hover": { boxShadow: 8 } }}
       >
         <CardContent>
-          <Typography variant="h4" component="h2" gutterBottom color="primary">
+          <Typography
+            variant="h4"
+            color="primary"
+            fontWeight="600"
+            gutterBottom
+          >
             {post.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            By {post.author_username || "Unknown"}
-          </Typography>
           <ReactMarkdown>{post.content}</ReactMarkdown>
-        </CardContent>
+          <PostMeta
+            author={post.author_username}
+            createdAt={post.created_at}
+            postId={id}
+            initialLikeCount={post.like_count}
+            initiallyLiked={post.liked_by_current_user}
+          />
 
-        {isAuthor && (
-          <>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate(`/edit_post/${id}`)}
-              sx={{ mr: 2 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => setOpenDialog(true)}
-            >
-              Delete
-            </Button>
-          </>
-        )}
+          {isAuthor && (
+            <Box sx={{ mt: 3 }}>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Typography color="text.secondary" gutterBottom>
+                  You are the author, you can:
+                </Typography>
+                <Link
+                  variant="text"
+                  color="primary"
+                  onClick={() => navigate(`/edit_post/${id}`)}
+                  disableRipple
+                  sx={{
+                    textTransform: "none",
+                    textDecoration: "underline",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Edit
+                </Link>
+                <Typography color="text.secondary" gutterBottom>
+                  or
+                </Typography>
+                <Link
+                  variant="text"
+                  color="error"
+                  onClick={() => setOpenDialog(true)}
+                  disableRipple
+                  sx={{
+                    textTransform: "none",
+                    textDecoration: "underline",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Delete
+                </Link>
+              </Box>
+            </Box>
+          )}
+        </CardContent>
 
         <Dialog
           open={openDialog}

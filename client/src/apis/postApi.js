@@ -5,16 +5,23 @@ async function handleResponse(res) {
   if (!res.ok) {
     throw new Error(data.message || res.statusText);
   }
+  console.log(data);
   return data;
 }
 
 export async function getPosts() {
-  const res = await fetch(`${API_BASE}/posts`);
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/posts`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
   return handleResponse(res);
 }
 
 export async function getPostById(id) {
-  const res = await fetch(`${API_BASE}/posts/${id}`);
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/posts/${id}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
   return handleResponse(res);
 }
 

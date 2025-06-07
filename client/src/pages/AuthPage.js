@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Box,
   Card,
-  CardHeader,
+  Typography,
   CardContent,
   TextField,
   Button,
@@ -50,16 +50,24 @@ export default function AuthPage() {
   return (
     <Card
       variant="outlined"
-      sx={{ p: 2, "&:hover": { boxShadow: 6 }, maxWidth: 600, mx: "auto" }}
+      sx={{
+        p: 2,
+        "&:hover": { boxShadow: 8 },
+        maxWidth: 600,
+        mx: "auto",
+        gap: 3,
+      }}
     >
-      <CardHeader title={mode === "login" ? "Login" : "Register"} />
       <CardContent>
+        <Typography variant="h5" fontWeight="600" mb={4} color="primary">
+          {mode === "login" ? "Login" : "Register"}
+        </Typography>
         <ToggleButtonGroup
           value={mode}
           exclusive
           onChange={(e, val) => val && setMode(val)}
           fullWidth
-          sx={{ mb: 2 }}
+          sx={{ mb: 3 }}
         >
           <ToggleButton value="login">Login</ToggleButton>
           <ToggleButton value="register">Register</ToggleButton>
@@ -68,7 +76,7 @@ export default function AuthPage() {
         <Box
           component="form"
           onSubmit={handleAuth}
-          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+          sx={{ display: "flex", flexDirection: "column", gap: 3 }}
         >
           <TextField
             label="Username"

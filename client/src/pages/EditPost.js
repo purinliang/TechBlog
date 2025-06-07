@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, updatePost } from "../apis/postApi";
-import { Card, CardHeader, CardContent, Alert } from "@mui/material";
+import { Card, Typography, CardContent, Alert } from "@mui/material";
 import PostForm from "../components/PostForm";
 
 export default function EditPost() {
@@ -41,8 +41,10 @@ export default function EditPost() {
         variant="outlined"
         sx={{ p: 2, "&:hover": { boxShadow: 8 }, gap: 3 }}
       >
-        <CardHeader title="Edit Post" />
         <CardContent>
+          <Typography variant="h5" fontWeight="600" mb={4} color="primary">
+            Edit Post
+          </Typography>
           <PostForm
             buttonText="Submit"
             onSubmit={handleUpdatePost}

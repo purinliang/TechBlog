@@ -1,5 +1,5 @@
 import PostForm from "../components/PostForm";
-import { Card, CardHeader, CardContent, Alert } from "@mui/material";
+import { Card, Typography, CardContent, Alert } from "@mui/material";
 import { createPost } from "../apis/postApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -24,8 +24,10 @@ export default function NewPost() {
         variant="outlined"
         sx={{ p: 2, "&:hover": { boxShadow: 8 }, gap: 3 }}
       >
-        <CardHeader title="Create a New Post" />
         <CardContent>
+          <Typography variant="h5" fontWeight="600" mb={4} color="primary">
+            Create a New Post
+          </Typography>
           <PostForm buttonText="Submit" onSubmit={handleCreatePost} />
         </CardContent>
         {error && <Alert severity="error">{error}</Alert>}{" "}
