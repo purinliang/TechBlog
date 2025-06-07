@@ -4,6 +4,8 @@ import { useUser } from "../UserContext";
 
 export default function UserStatus() {
   const { username, setUsername } = useUser();
+  const localUsername = localStorage.getItem("username");
+  setUsername(localUsername);
   const navigate = useNavigate();
 
   const handleClick = () => {

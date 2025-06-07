@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import UserStatus from "./components/UserStatusButton";
+import UserStatus from "./components/UserStatus";
 
 export default function App() {
   const theme = useTheme();
