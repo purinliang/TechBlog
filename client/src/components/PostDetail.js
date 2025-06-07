@@ -7,8 +7,7 @@ import {
   likePost,
   unlikePost,
 } from "../apis/likeApi";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PostMeta from "../components/PostMeta";
 import {
   Button,
   Card,
@@ -145,35 +144,13 @@ export default function PostDetail() {
             {post.title}
           </Typography>
           <ReactMarkdown>{post.content}</ReactMarkdown>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 4 }}>
-            <Typography variant="body2" color="text.secondary">
-              posted by {post.author_username || "Unknown"} | at{" "}
-              {new Date(post.created_at).toLocaleString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: false,
-              })}{" "}
-              |
-            </Typography>
-            <Button
-              onClick={handleLikeClick}
-              variant="text"
-              size="small"
-              color="error"
-              sx={{ minWidth: 0, padding: 0 }}
-            >
-              {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </Button>
-            <Typography variant="body2" color="text.secondary">
-              {likeCount}
-            </Typography>
-            {/* <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>
-              💬 0 comments
-            </Typography> */}
-          </Box>
+          <PostMeta
+            author={post.author_username}
+            createdAt={post.created_at}
+            likeCount={likeCount}
+            liked={liked}
+            onLikeClick={handleLikeClick}
+          />
 
           {isAuthor && (
             <Box sx={{ mt: 3 }}>
