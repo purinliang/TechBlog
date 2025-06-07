@@ -2,6 +2,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, deletePost } from "../apis/postApi";
 import {
+  getLikeCount,
+  getLikeStatus,
+  likePost,
+  unlikePost,
+} from "../apis/likeApi";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import {
   Button,
   Card,
   CardContent,
@@ -28,6 +36,9 @@ export default function PostDetail() {
   const [deleteError, setDeleteError] = useState(null);
   const [isAuthor, setIsAuthor] = useState(false);
 
+  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -36,6 +47,29 @@ export default function PostDetail() {
         const username = localStorage.getItem("username");
         if (fetchedPost?.author_username && username) {
           setIsAuthor(fetchedPost.author_username === username);
+        }
+
+        const token = localStorage.getItem("token");
+
+        if (token) {
+          try {
+            const likeStatus = await getLikeStatus(id);
+            setLikeCount(Number(likeStatus.count) || 0);
+            setLiked(!!likeStatus.likedByCurrentUser);
+          } catch (err) {
+            console.error("Failed to fetch like status:", err);
+            setLikeCount(0);
+            setLiked(false);
+          }
+        } else {
+          try {
+            const likeRes = await getLikeCount(id);
+            setLikeCount(Number(likeRes.likes) || 0);
+            setLiked(false);
+          } catch (err) {
+            console.error("Failed to fetch like count:", err);
+            setLikeCount(0);
+          }
         }
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -60,6 +94,23 @@ export default function PostDetail() {
 
   const handleConfirmDelete = () => {
     handleDelete();
+  };
+
+  const handleLikeClick = async () => {
+    try {
+      if (liked) {
+        console.log("unlike");
+        await unlikePost(id);
+        setLikeCount((prev) => prev - 1);
+      } else {
+        console.log("like");
+        await likePost(id);
+        setLikeCount((prev) => prev + 1);
+      }
+      setLiked((prev) => !prev);
+    } catch (err) {
+      console.error("Failed to toggle like", err);
+    }
   };
 
   if (loading) {
@@ -94,17 +145,36 @@ export default function PostDetail() {
             {post.title}
           </Typography>
           <ReactMarkdown>{post.content}</ReactMarkdown>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
-            by {post.author_username || "Unknown"}, at{" "}
-            {new Date(post.created_at).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            })}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 4 }}>
+            <Typography variant="body2" color="text.secondary">
+              posted by {post.author_username || "Unknown"} | at{" "}
+              {new Date(post.created_at).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: false,
+              })}{" "}
+              |
+            </Typography>
+            <Button
+              onClick={handleLikeClick}
+              variant="text"
+              size="small"
+              color="error"
+              sx={{ minWidth: 0, padding: 0 }}
+            >
+              {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </Button>
+            <Typography variant="body2" color="text.secondary">
+              {likeCount}
+            </Typography>
+            {/* <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>
+              💬 0 comments
+            </Typography> */}
+          </Box>
+
           {isAuthor && (
             <Box sx={{ mt: 3 }}>
               <Box sx={{ display: "flex", gap: 2 }}>
