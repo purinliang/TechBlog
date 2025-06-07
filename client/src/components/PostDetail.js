@@ -129,7 +129,7 @@ export default function PostDetail() {
                 <Link
                   variant="text"
                   color="primary"
-                  onClick={() => navigate(`/edit_post/${id}`)}
+                  onClick={() => navigate(`/editpost/${id}`)}
                   disableRipple
                   sx={{
                     textTransform: "none",
