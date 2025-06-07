@@ -38,7 +38,6 @@ export default function PostForm({
         gap: 3,
       }}
     >
-      {error && <Alert severity="error">{error}</Alert>}
       <TextField
         label="Title"
         variant="outlined"
@@ -51,7 +50,8 @@ export default function PostForm({
         label="Content"
         variant="outlined"
         multiline
-        rows={8}
+        minRows={8}
+        maxRows={16}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         required
@@ -60,6 +60,7 @@ export default function PostForm({
       <Button variant="contained" type="submit" size="large">
         {buttonText}
       </Button>
+      {error && <Alert severity="error">{error}</Alert>}
     </Box>
   );
 }
