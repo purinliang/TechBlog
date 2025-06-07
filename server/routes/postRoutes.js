@@ -4,11 +4,12 @@ const PostModel = require("../models/postModel");
 const verifyToken = require("../middleware/auth");
 
 const logRequest = (req) => {
-  console.log(`Received ${req.method} request for: ${req.originalUrl}`);
+  // console.log(`Received ${req.method} request for: ${req.originalUrl}`);
 };
 
 router.get("/", async (req, res) => {
   logRequest(req);
+  
   try {
     const posts = await PostModel.getAll();
     res.json(posts);
@@ -20,6 +21,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   logRequest(req);
+
   if (!req.params.id) {
     return res.status(400).json({ error: "Post ID is required." });
   }
@@ -37,7 +39,6 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", verifyToken, async (req, res) => {
   logRequest(req);
-  console.log(req);
   const { title, content } = req.body;
 
   if (!title || !content) {
