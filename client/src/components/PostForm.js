@@ -50,7 +50,7 @@ export default function PostForm({
         label="Content"
         variant="outlined"
         multiline
-        minRows={8}
+        minRows={12}
         maxRows={16}
         value={content}
         onChange={(e) => setContent(e.target.value)}
