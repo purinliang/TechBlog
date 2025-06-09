@@ -112,7 +112,18 @@ export default function PostDetail() {
           >
             {post.title}
           </Typography>
-          <ReactMarkdown>{post.content}</ReactMarkdown>
+          <Box
+            className="markdown-container"
+            sx={{
+              "& img": {
+                maxWidth: "100%",
+                height: "auto",
+                display: "block",
+              },
+            }}
+          >
+            <ReactMarkdown>{post.content}</ReactMarkdown>
+          </Box>
           <PostMeta
             author={post.author_username}
             createdAt={post.created_at}
