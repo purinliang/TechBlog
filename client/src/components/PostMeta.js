@@ -57,7 +57,7 @@ export default function PostMeta({
         color="text.secondary"
         sx={{ userSelect: "none", flexShrink: 0 }}
       >
-        posted by {author || "Unknown"} | at{" "}
+        by {author || "Unknown"} | at{" "}
         {new Date(createdAt).toLocaleString("en-US", {
           month: "short",
           day: "numeric",
