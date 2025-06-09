@@ -14,7 +14,6 @@ router.get("/post/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
     const comments = await CommentModel.getByPostId(postId);
-    console.log(`comments of post ${postId} is ` + comments);
     res.json(comments);
   } catch (err) {
     console.error(err);
@@ -24,11 +23,12 @@ router.get("/post/:postId", async (req, res) => {
 
 router.post("/", verifyToken, async (req, res) => {
   logRequest(req);
+  const userId = req.user?.userId;
   try {
     const { post_id, content, parent_comment_id } = req.body;
     const newComment = await CommentModel.create({
       post_id,
-      author_id: req.user.id,
+      author_id: userId,
       content,
       parent_comment_id,
     });
@@ -41,9 +41,10 @@ router.post("/", verifyToken, async (req, res) => {
 
 router.put("/:id", verifyToken, async (req, res) => {
   logRequest(req);
+  const commentId = req.params.id;
   try {
     const { content } = req.body;
-    const result = await CommentModel.update(req.params.id, content);
+    const result = await CommentModel.update(commentId, content);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -53,8 +54,9 @@ router.put("/:id", verifyToken, async (req, res) => {
 
 router.delete("/:id", verifyToken, async (req, res) => {
   logRequest(req);
+  const commentId = req.params.id;
   try {
-    const result = await CommentModel.delete(req.params.id);
+    const result = await CommentModel.delete(commentId);
     res.json(result);
   } catch (err) {
     console.error(err);
