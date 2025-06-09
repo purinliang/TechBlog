@@ -45,11 +45,11 @@ function validateEnv() {
 
   // Output validation results
   if (errors.length > 0) {
-    console.error("❌ Environment variable validation failed:");
+    console.error("🔴 Environment variable validation failed:");
     errors.forEach((err) => console.error(" - " + err));
     process.exit(1); // Stop the server if validation fails
   } else {
-    console.log("✅ Environment variables validated successfully.");
+    console.log("🟢 Environment variables validated successfully.");
   }
 }
 

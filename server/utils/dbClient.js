@@ -24,7 +24,7 @@ let dbType;
     }
     dbClient = createSupabaseClient(supabaseUrl, supabaseKey);
     dbType = "supabase";
-    console.log("✅ Using Supabase");
+    console.log("🟢 Using Supabase");
   } else {
     const localUrl = process.env.LOCAL_POSTGRESQL_URL;
     if (!localUrl) {
@@ -33,10 +33,10 @@ let dbType;
     dbClient = new PgClient({ connectionString: localUrl });
     await dbClient.connect();
     dbType = "postgres";
-    console.log("✅ Using local PostgreSQL");
+    console.log("🟢 Using local PostgreSQL");
   }
 })().catch((err) => {
-  console.error("❌ Database initialization failed:", err);
+  console.error("🔴 Database initialization failed:", err);
   process.exit(1);
 });
 

@@ -255,3 +255,5 @@ In redis-cli:
 ```bash
 PING # The result should be "PONG"
 ```
+
+Or on upstash: https://console.upstash.com/redis/
