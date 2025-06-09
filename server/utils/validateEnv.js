@@ -1,4 +1,4 @@
-// server/validateEnv.js
+// server/utils/validateEnv.js
 require("dotenv").config();
 
 function validateEnv() {
@@ -53,4 +53,4 @@ function validateEnv() {
   }
 }
 
-module.exports = validateEnv;
+validateEnv(); // Validate environment variables before starting the server

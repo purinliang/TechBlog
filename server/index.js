@@ -1,7 +1,5 @@
 // server/index.js
-const validateEnv = require("./validateEnv");
-validateEnv(); // Validate environment variables before starting the server
-
+require("./utils/validateEnv");
 require("./utils/dbClient");
 
 const cors = require("cors");
