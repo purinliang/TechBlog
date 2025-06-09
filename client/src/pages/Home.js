@@ -35,7 +35,7 @@ export default function Home() {
         }}
       >
         <CircularProgress />
-        <Typography variant="body" color="text.secondary" mt={2}>
+        <Typography variant="body" color="text.secondary" mt={8}>
           It may take around 15 seconds to start the backend if it's been idle.
         </Typography>
       </Box>
