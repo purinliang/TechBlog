@@ -1,9 +1,7 @@
-//server/models/likeModel.js
 const { dbClient, dbType } = require("../utils/dbClient");
 
 const LikeModel = {
-  getLikedPostIds: async (userId) => {
-    if (!userId) return [];
+  getPostIdsLikedByUser: async (userId) => {
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("likes")
@@ -16,7 +14,24 @@ const LikeModel = {
         "SELECT post_id FROM likes WHERE user_id = $1",
         [userId]
       );
-      return result.rows.map((r) => r.post_id);
+      return result.rows.map((row) => row.post_id);
+    }
+  },
+
+  getLikeCountForPost: async (postId) => {
+    if (dbType === "supabase") {
+      const { count, error } = await dbClient
+        .from("likes")
+        .select("id", { count: "exact", head: true })
+        .eq("post_id", postId);
+      if (error) throw error;
+      return count;
+    } else {
+      const result = await dbClient.query(
+        "SELECT COUNT(*) FROM likes WHERE post_id = $1",
+        [postId]
+      );
+      return parseInt(result.rows[0].count, 10);
     }
   },
 
@@ -28,7 +43,7 @@ const LikeModel = {
       if (error) throw error;
     } else {
       await dbClient.query(
-        "INSERT INTO likes (post_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+        "INSERT INTO likes (post_id, user_id) VALUES ($1, $2)",
         [postId, userId]
       );
     }

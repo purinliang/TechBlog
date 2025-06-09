@@ -11,32 +11,21 @@ const logRequest = (req) => {
 };
 
 router.get("/", verifyToken.optional, async (req, res) => {
-  const start = process.hrtime.bigint();
   logRequest(req);
 
   const userId = req.user?.userId || null;
   try {
-    const dbStart = process.hrtime.bigint();
-
     const posts = await PostService.getAll(userId);
+    let likedPostIds = [];
     if (userId) {
-      const likedPostIds = await LikeService.getLikedPostIds(userId);
-      posts.forEach((post) => {
-        post.liked_by_user = likedPostIds.includes(post.id);
-      });
+      likedPostIds = await LikeService.getPostIdsLikedByUser(userId);
     }
 
-    const dbEnd = process.hrtime.bigint();
-
-    const end = process.hrtime.bigint();
-    const total = Number(end - start) / 1e6; // ms
-    const dbMs = Number(dbEnd - dbStart) / 1e6; // ms
-    const appMs = total - dbMs; // ms
-    console.log(
-      `[TIMING] ${req.method} ${req.path} : ` +
-        `TOTAL: ${total.toFixed(1)}ms, ` +
-        `db: ${dbMs.toFixed(1)}ms, ` +
-        `app: ${appMs.toFixed(1)}ms`
+    await Promise.all(
+      posts.map(async (post) => {
+        post.liked_by_user = likedPostIds.includes(post.id);
+        post.like_count = await LikeService.getLikeCountForPost(post.id);
+      })
     );
     res.json(posts);
   } catch (err) {
@@ -51,10 +40,17 @@ router.get("/myposts", verifyToken, async (req, res) => {
   const userId = req.user?.userId;
   try {
     const myposts = await PostService.getMyAll(userId);
-    const likedPostIds = await LikeService.getLikedPostIds(userId);
-    myposts.forEach((post) => {
-      post.liked_by_user = likedPostIds.includes(post.id);
-    });
+    let likedPostIds = [];
+    if (userId) {
+      likedPostIds = await LikeService.getPostIdsLikedByUser(userId);
+    }
+
+    await Promise.all(
+      myposts.map(async (post) => {
+        post.liked_by_user = likedPostIds.includes(post.id);
+        post.like_count = await LikeService.getLikeCountForPost(post.id);
+      })
+    );
     res.json(myposts);
   } catch (err) {
     console.error(`Error fetching my posts: ${err.message}`);
@@ -76,9 +72,11 @@ router.get("/:id", verifyToken.optional, async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
     if (userId) {
-      const likedPostIds = await LikeService.getLikedPostIds(userId);
+      const likedPostIds = await LikeService.getPostIdsLikedByUser(userId);
       post.liked_by_user = likedPostIds.includes(post.id);
     }
+
+    post.like_count = await LikeService.getLikeCountForPost(post.id);
     res.json(post);
   } catch (err) {
     console.error(`Error fetching post ID ${req.params.id}: ${err.message}`);

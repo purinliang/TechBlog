@@ -5,7 +5,7 @@ const debug = require("debug")("postService");
 const POSTS_CACHE_KEY = "posts:all";
 const MY_POSTS_CACHE_KEY = (userId) => `user:${userId}:posts`;
 const POST_BY_ID_CACHE_KEY = (postId) => `post:${postId}`;
-const CACHE_TTL = 5; // seconds
+const CACHE_TTL = 60; // seconds
 
 const PostService = {
   getAll: async () => {

@@ -1,4 +1,3 @@
-// server/models/postModel.js
 const { dbClient, dbType } = require("../utils/dbClient");
 
 const PostModel = {
@@ -8,46 +7,25 @@ const PostModel = {
         .from("posts")
         .select(
           `
-          id,
-          title,
-          content,
-          author_id,
-          created_at,
-          profiles(username),
-          likes(user_id)
+          *,
+          profiles(username)
         `
         )
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data.map((post) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        author_id: post.author_id,
+        ...post,
         author_username: post.profiles?.username || "Unknown",
-        created_at: post.created_at,
-        like_count: post.likes?.length || 0,
       }));
     } else {
-      const result = await dbClient.query(
-        `SELECT
-           p.id,
-           p.title,
-           p.content,
-           p.author_id,
-           pr.username AS author_username,
-           p.created_at,
-           COALESCE(lc.like_count, 0) AS like_count
-         FROM posts p
-         LEFT JOIN profiles pr ON p.author_id = pr.id
-         LEFT JOIN (
-           SELECT post_id, COUNT(*) AS like_count
-           FROM likes
-           GROUP BY post_id
-         ) lc ON p.id = lc.post_id
-         ORDER BY p.created_at DESC;
-        `
-      );
+      const result = await dbClient.query(`
+        SELECT
+          p.*,
+          pr.username AS author_username
+        FROM posts p
+        LEFT JOIN profiles pr ON p.author_id = pr.id
+        ORDER BY p.created_at DESC;
+      `);
       return result.rows;
     }
   },
@@ -58,47 +36,28 @@ const PostModel = {
         .from("posts")
         .select(
           `
-          id,
-          title,
-          content,
-          author_id,
-          created_at,
-          profiles(username),
-          likes(user_id)
+          *,
+          profiles(username)
         `
         )
         .eq("author_id", userId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data.map((post) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        author_id: post.author_id,
+        ...post,
         author_username: post.profiles?.username || "Unknown",
-        created_at: post.created_at,
-        like_count: post.likes?.length || 0,
       }));
     } else {
       const result = await dbClient.query(
-        `SELECT
-           p.id,
-           p.title,
-           p.content,
-           p.author_id,
-           pr.username AS author_username,
-           p.created_at,
-           COALESCE(lc.like_count, 0) AS like_count
-         FROM posts p
-         LEFT JOIN profiles pr ON p.author_id = pr.id
-         LEFT JOIN (
-           SELECT post_id, COUNT(*) AS like_count
-           FROM likes
-           GROUP BY post_id
-         ) lc ON p.id = lc.post_id
-         WHERE p.author_id = $1
-         ORDER BY p.created_at DESC;
-        `,
+        `
+        SELECT
+          p.*,
+          pr.username AS author_username
+        FROM posts p
+        LEFT JOIN profiles pr ON p.author_id = pr.id
+        WHERE p.author_id = $1
+        ORDER BY p.created_at DESC;
+      `,
         [userId]
       );
       return result.rows;
@@ -111,46 +70,27 @@ const PostModel = {
         .from("posts")
         .select(
           `
-          id,
-          title,
-          content,
-          author_id,
-          created_at,
-          profiles(username),
-          likes(user_id)
+          *,
+          profiles(username)
         `
         )
         .eq("id", postId)
         .single();
       if (error) throw error;
       return {
-        id: data.id,
-        title: data.title,
-        content: data.content,
-        author_id: data.author_id,
+        ...data,
         author_username: data.profiles?.username || "Unknown",
-        created_at: data.created_at,
-        like_count: data.likes?.length || 0,
       };
     } else {
       const result = await dbClient.query(
-        `SELECT
-           p.id,
-           p.title,
-           p.content,
-           p.author_id,
-           pr.username AS author_username,
-           p.created_at,
-           COALESCE(lc.like_count, 0) AS like_count
-         FROM posts p
-         LEFT JOIN profiles pr ON p.author_id = pr.id
-         LEFT JOIN (
-           SELECT post_id, COUNT(*) AS like_count
-           FROM likes
-           GROUP BY post_id
-         ) lc ON p.id = lc.post_id
-         WHERE p.id = $1;
-        `,
+        `
+        SELECT
+          p.*,
+          pr.username AS author_username
+        FROM posts p
+        LEFT JOIN profiles pr ON p.author_id = pr.id
+        WHERE p.id = $1;
+      `,
         [postId]
       );
       return result.rows[0];
