@@ -57,7 +57,8 @@ export default function CommentList({ postId }) {
         content: text,
         parent_comment_id: parentId,
       });
-      setComments((prev) => [...prev, newComment]);
+      window.location.reload();
+      // setComments((prev) => [...prev, newComment]);
     } catch (err) {
       console.error("Error posting comment:", err);
       setCommentError("Failed to submit comment");
@@ -71,8 +72,9 @@ export default function CommentList({ postId }) {
         content: text,
         parent_comment_id: parentId,
       });
-      setComments((prev) => [...prev, newComment]);
-      setReplyError((prev) => ({ ...prev, [parentId]: null }));
+      window.location.reload();
+      // setComments((prev) => [...prev, newComment]);
+      // setReplyError((prev) => ({ ...prev, [parentId]: null }));
     } catch (err) {
       console.error("Error posting reply:", err);
       setReplyError((prev) => ({

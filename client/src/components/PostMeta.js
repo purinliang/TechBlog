@@ -45,16 +45,23 @@ export default function PostMeta({
     <Box
       sx={{
         display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-end",
         mt: 4,
-        flexWrap: "wrap",
       }}
     >
-      {/* Left Section */}
-      <Typography variant="body2" color="text.secondary">
+      {/* Left Section: Author + Time */}
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{
+          textAlign: { xs: "left", sm: "inherit" },
+          width: "100%",
+        }}
+      >
         by {author || "Unknown"} | at{" "}
-        {new Date(createdAt).toLocaleString("en-US", {
+        {new Date(createdAt + "Z").toLocaleString(undefined, {
           month: "short",
           day: "numeric",
           year: "numeric",
@@ -64,13 +71,13 @@ export default function PostMeta({
         })}
       </Typography>
 
-      {/* Right Secion */}
+      {/* Right Section: Likes + Comments */}
       <Box
         sx={{
           display: "flex",
+          flexDirection: "row",
           alignItems: "center",
           gap: 2,
-          flexShrink: 0,
         }}
       >
         {/* Like Section */}

@@ -29,18 +29,20 @@ export default function CommentCard({
   };
 
   return (
-    <Box sx={{ ml: Math.min(level, 5) * 4, mt: 2 }}>
+    <Box sx={{ ml: Math.min(level, 4) * 2, mt: 2 }}>
       <Card variant="outlined">
         <CardContent
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
             pl: 2,
             pr: 2,
             pb: 0,
+            gap: 1,
           }}
         >
-          <Box sx={{ flex: 1, pr: 2 }}>
+          <Box sx={{ flex: 1 }}>
             <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
               {comment.content}
             </Typography>
@@ -49,15 +51,21 @@ export default function CommentCard({
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              justifyContent: "space-between",
-              minWidth: "180px",
+              flexDirection: { xs: "row", sm: "column" },
+              justifyContent: { xs: "space-between", sm: "space-between" },
+              alignItems: { xs: "center", sm: "flex-end" },
+              mt: { xs: 1, sm: 0 },
+              minWidth: { xs: "100%", sm: "180px" },
+              gap: 1,
             }}
           >
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: { xs: "left", sm: "right" }, flex: 1 }}
+            >
               by {comment.author_username || "Anonymous"} {" | at "}
-              {new Date(comment.created_at).toLocaleString("en-US", {
+              {new Date(comment.created_at + "Z").toLocaleString(undefined, {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -74,7 +82,6 @@ export default function CommentCard({
               }}
               disabled={!isLoggedIn}
               title={!isLoggedIn ? "Login required to reply" : ""}
-              sx={{ alignSelf: "flex-end" }}
             >
               <Reply fontSize="small" />
             </IconButton>
