@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Reply } from "@mui/icons-material";
+import ReactMarkdown from "react-markdown";
 
 export default function CommentCard({
   comment,
@@ -42,10 +43,18 @@ export default function CommentCard({
             gap: 1,
           }}
         >
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-              {comment.content}
-            </Typography>
+          <Box
+            className="markdown-container"
+            sx={{
+              "& img": {
+                maxWidth: "40%",
+                maxheight: "20%",
+                display: "block",
+              },
+              flex: 1,
+            }}
+          >
+            <ReactMarkdown>{comment.content}</ReactMarkdown>
           </Box>
 
           <Box
