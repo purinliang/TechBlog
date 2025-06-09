@@ -1,9 +1,7 @@
 // server/index.js
-const validateEnv = require("./validateEnv");
-validateEnv(); // Validate environment variables before starting the server
-
-const { connectDatabase } = require("./database/db");
-connectDatabase();
+require("./utils/validateEnv");
+require("./utils/dbClient");
+require("./utils/redisClient");
 
 const cors = require("cors");
 const express = require("express");
@@ -20,5 +18,5 @@ app.use("/likes", likeRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
+  console.log(`🟢 Server is running on port ${PORT}`);
 });

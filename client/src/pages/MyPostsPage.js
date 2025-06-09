@@ -15,7 +15,7 @@ export default function MyPostsPage() {
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Error fetching my posts:", error);
-        setError("Failed to load my posts.");
+        setError("Failed to load my posts." + error);
       } finally {
         setLoading(false);
       }
