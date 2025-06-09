@@ -52,11 +52,7 @@ export default function PostMeta({
       }}
     >
       {/* Left Section */}
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ userSelect: "none", flexShrink: 0 }}
-      >
+      <Typography variant="body2" color="text.secondary">
         by {author || "Unknown"} | at{" "}
         {new Date(createdAt).toLocaleString("en-US", {
           month: "short",

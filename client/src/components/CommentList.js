@@ -43,7 +43,7 @@ export default function CommentList({ postId }) {
     return map;
   }, {});
 
-  const renderComments = (list) => {
+  const renderComments = (list, level = 0) => {
     if (list.length === 0) {
       return (
         <Alert severity="info" sx={{ py: 1, fontSize: "1rem" }}>
@@ -54,8 +54,12 @@ export default function CommentList({ postId }) {
 
     return list.map((c) => (
       <Box key={c.id}>
-        <CommentCard comment={c} onReplySubmit={handleSubmitComment} />
-        {repliesMap[c.id] && renderComments(repliesMap[c.id])}
+        <CommentCard
+          comment={c}
+          onReplySubmit={handleSubmitComment}
+          level={level}
+        />
+        {repliesMap[c.id] && renderComments(repliesMap[c.id], level + 1)}
       </Box>
     ));
   };
