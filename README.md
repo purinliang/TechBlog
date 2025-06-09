@@ -242,3 +242,16 @@ SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
 Please refer to `database/README.md`.
 
 Make sure only one database method is active at a time.
+
+### 7. Init Redis
+
+```bash
+docker-compose up -d
+docker exec -it techblog_redis_1 redis-cli
+```
+
+In redis-cli:
+
+```bash
+PING # The result should be "PONG"
+```
