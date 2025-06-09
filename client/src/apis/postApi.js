@@ -25,6 +25,14 @@ export async function getMyPosts() {
   return handleResponse(res);
 }
 
+export async function getLikedPosts() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/posts/liked`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return handleResponse(res);
+}
+
 export async function getPostById(id) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/posts/${id}`, {

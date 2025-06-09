@@ -10,7 +10,9 @@ import {
   List,
   ListItem,
   ListItemText,
+  Divider,
   CssBaseline,
+  Tooltip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -24,6 +26,39 @@ export default function App() {
 
   const desktopDrawerWidth = "20vw";
   const mobileDrawerWidth = 200;
+
+  const token = localStorage.getItem("token");
+  const isLoggedIn = Boolean(token);
+
+  function ProtectedMenuItem({ to, label }) {
+    return isLoggedIn ? (
+      <ListItem
+        button
+        component={Link}
+        to={to}
+        onClick={() => !isDesktop && setMobileOpen(false)}
+      >
+        <ListItemText
+          primary={label}
+          primaryTypographyProps={{ color: theme.palette.text.primary }}
+        />
+      </ListItem>
+    ) : (
+      <Tooltip title="Please login/register first" arrow>
+        <ListItem
+          button
+          disabled
+          sx={{ cursor: "default" }}
+          onClick={(e) => e.preventDefault()}
+        >
+          <ListItemText
+            primary={label}
+            primaryTypographyProps={{ color: theme.palette.text.disabled }}
+          />
+        </ListItem>
+      </Tooltip>
+    );
+  }
 
   const drawerContent = (
     <>
@@ -40,28 +75,12 @@ export default function App() {
             primaryTypographyProps={{ color: theme.palette.text.primary }}
           />
         </ListItem>
-        <ListItem
-          button
-          component={Link}
-          to="/myposts"
-          onClick={() => !isDesktop && setMobileOpen(false)}
-        >
-          <ListItemText
-            primary="My Posts"
-            primaryTypographyProps={{ color: theme.palette.text.primary }}
-          />
-        </ListItem>
-        <ListItem
-          button
-          component={Link}
-          to="/newpost"
-          onClick={() => !isDesktop && setMobileOpen(false)}
-        >
-          <ListItemText
-            primary="New Post"
-            primaryTypographyProps={{ color: theme.palette.text.primary }}
-          />
-        </ListItem>
+
+        <Divider sx={{ my: 1 }} />
+
+        <ProtectedMenuItem to="/newpost" label="New Post" />
+        <ProtectedMenuItem to="/myposts" label="My Posts" />
+        <ProtectedMenuItem to="/likedposts" label="Liked Posts" />
       </List>
     </>
   );

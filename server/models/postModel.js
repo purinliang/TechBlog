@@ -64,6 +64,33 @@ const PostModel = {
     }
   },
 
+  getPostsByIds: async (postIds) => {
+    if (postIds.length === 0) return [];
+    if (dbType === "supabase") {
+      const { data, error } = await dbClient
+        .from("posts")
+        .select(
+          `*,
+             profiles(username)`
+        )
+        .in("id", postIds);
+      if (error) throw error;
+      return data.map((post) => ({
+        ...post,
+        author_username: post.profiles?.username || "Unknown",
+      }));
+    } else {
+      const result = await dbClient.query(
+        `SELECT p.*, pr.username AS author_username
+           FROM posts p
+           LEFT JOIN profiles pr ON p.author_id = pr.id
+           WHERE p.id = ANY($1)`,
+        [postIds]
+      );
+      return result.rows;
+    }
+  },
+
   getByIdPublic: async (postId) => {
     if (dbType === "supabase") {
       const { data, error } = await dbClient

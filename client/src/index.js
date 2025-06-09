@@ -10,6 +10,7 @@ import PostDetail from "./components/PostDetail";
 import AuthPage from "./pages/AuthPage";
 import { UserProvider } from "./UserContext";
 import "./index.css";
+import LikedPostsPage from "./pages/LikedPostsPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -21,6 +22,7 @@ function Main() {
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
             <Route path="myposts" element={<MyPostsPage />} />
+            <Route path="likedposts" element={<LikedPostsPage />} />
             <Route path="newpost" element={<NewPost />} />
             <Route path="posts/:id" element={<PostDetail />} />
             <Route path="editpost/:id" element={<EditPost />} />

@@ -44,6 +44,11 @@ const PostService = {
     return posts;
   },
 
+  getPostsByIds: async (postIds) => {
+    const posts = await PostModel.getPostsByIds(postIds);
+    return posts;
+  },
+
   getByIdPublic: async (postId) => {
     const key = POST_BY_ID_CACHE_KEY(postId);
     debug(`Checking cache for key: ${key}`);
