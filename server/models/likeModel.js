@@ -1,47 +1,24 @@
+//server/models/likeModel.js
 const { dbClient, dbType } = require("../utils/dbClient");
 
 const LikeModel = {
-  //   getLikesCount: async (postId) => {
-  //     const { dbClient, dbType } = await connectDatabase();
-
-  //     if (dbType === "supabase") {
-  //       const { count, error } = await dbClient
-  //         .from("likes")
-  //         .select("*", { count: "exact", head: true })
-  //         .eq("post_id", postId);
-  //       if (error) throw error;
-  //       return count;
-  //     } else {
-  //       const result = await dbClient.query(
-  //         "SELECT COUNT(*) FROM likes WHERE post_id = $1",
-  //         [postId]
-  //       );
-  //       return parseInt(result.rows[0].count, 10);
-  //     }
-  //   },
-
-  //   checkIfLiked: async (postId, userId) => {
-  //     const { dbClient, dbType } = await connectDatabase();
-
-  //     if (dbType === "supabase") {
-  //       const { data, error } = await dbClient
-  //         .from("likes")
-  //         .select("id")
-  //         .eq("post_id", postId)
-  //         .eq("user_id", userId)
-  //         .limit(1)
-  //         .single();
-
-  //       if (error && error.code !== "PGRST116") throw error;
-  //       return !!data;
-  //     } else {
-  //       const result = await dbClient.query(
-  //         "SELECT 1 FROM likes WHERE post_id = $1 AND user_id = $2 LIMIT 1",
-  //         [postId, userId]
-  //       );
-  //       return result.rowCount > 0;
-  //     }
-  //   },
+  getLikedPostIds: async (userId) => {
+    if (!userId) return [];
+    if (dbType === "supabase") {
+      const { data, error } = await dbClient
+        .from("likes")
+        .select("post_id")
+        .eq("user_id", userId);
+      if (error) throw error;
+      return data.map((row) => row.post_id);
+    } else {
+      const result = await dbClient.query(
+        "SELECT post_id FROM likes WHERE user_id = $1",
+        [userId]
+      );
+      return result.rows.map((r) => r.post_id);
+    }
+  },
 
   addLike: async (postId, userId) => {
     if (dbType === "supabase") {
