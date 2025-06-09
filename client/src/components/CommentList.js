@@ -2,20 +2,40 @@ import { useEffect, useState } from "react";
 import { Typography, Box, TextField, Button, Alert } from "@mui/material";
 import CommentCard from "./CommentCard";
 import { getCommentsByPostId, createComment } from "../apis/commentApi";
+import { Skeleton } from "@mui/material";
 
 export default function CommentList({ postId }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [commentError, setCommentError] = useState(null);
+  const [replyError, setReplyError] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  function SkeletonCommentCard({ level = 0 }) {
+    return (
+      <Box sx={{ pl: level * 2, mb: 2 }}>
+        <Skeleton variant="text" width="40%" />
+        <Skeleton variant="text" width="80%" />
+        <Skeleton
+          variant="rectangular"
+          height={40}
+          sx={{ mt: 1, borderRadius: 1 }}
+        />
+      </Box>
+    );
+  }
 
   useEffect(() => {
     const fetchComments = async () => {
+      setLoading(true);
       try {
         const data = await getCommentsByPostId(postId);
         setComments(data);
       } catch (err) {
         console.error("Error fetching comments:", err);
         setCommentError("Failed to load comments");
+      } finally {
+        setLoading(false);
       }
     };
     fetchComments();
@@ -29,10 +49,31 @@ export default function CommentList({ postId }) {
         parent_comment_id: parentId,
       });
       setComments((prev) => [...prev, newComment]);
-      window.location.reload();
+      // The reply count need to be refreshed
+      // window.location.reload();
     } catch (err) {
       console.error("Error posting comment:", err);
       setCommentError("Failed to submit comment");
+    }
+  };
+
+  const handleReplyComment = async (text, parentId) => {
+    try {
+      const newComment = await createComment({
+        post_id: postId,
+        content: text,
+        parent_comment_id: parentId,
+      });
+      setComments((prev) => [...prev, newComment]);
+      setReplyError((prev) => ({ ...prev, [parentId]: null }));
+      // The reply count need to be refreshed
+      // window.location.reload();
+    } catch (err) {
+      console.error("Error posting reply:", err);
+      setReplyError((prev) => ({
+        ...prev,
+        [parentId]: "Failed to submit reply",
+      }));
     }
   };
 
@@ -57,9 +98,14 @@ export default function CommentList({ postId }) {
       <Box key={c.id}>
         <CommentCard
           comment={c}
-          onReplySubmit={handleSubmitComment}
+          onReplySubmit={handleReplyComment}
           level={level}
         />
+        {replyError[c.id] && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {replyError[c.id]}
+          </Alert>
+        )}
         {repliesMap[c.id] && renderComments(repliesMap[c.id], level + 1)}
       </Box>
     ));
@@ -71,9 +117,11 @@ export default function CommentList({ postId }) {
         Comments
       </Typography>
 
-      {commentError && <Alert severity="error">{commentError}</Alert>}
-
-      <Box sx={{ mt: 1 }}>{renderComments(topLevel)}</Box>
+      <Box sx={{ mt: 1 }}>
+        {loading
+          ? [...Array(1)].map((_, idx) => <SkeletonCommentCard key={idx} />)
+          : renderComments(topLevel)}
+      </Box>
 
       <Typography
         variant="h6"
@@ -92,6 +140,11 @@ export default function CommentList({ postId }) {
         onChange={(e) => setNewComment(e.target.value)}
         placeholder="Write something..."
       />
+      {commentError && (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {commentError}
+        </Alert>
+      )}
       <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end" }}>
         <Button
           variant="contained"
