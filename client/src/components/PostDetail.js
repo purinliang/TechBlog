@@ -116,7 +116,7 @@ export default function PostDetail() {
             createdAt={post.created_at}
             postId={id}
             initialLikeCount={post.like_count}
-            initiallyLiked={post.liked_by_current_user}
+            initiallyLiked={post.liked_by_user}
           />
 
           {isAuthor && (
