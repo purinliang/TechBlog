@@ -8,12 +8,14 @@ const express = require("express");
 const app = express();
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 const likeRoutes = require("./routes/likeRoutes");
 
 app.use(cors());
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/posts", postRoutes);
+app.use("/comments", commentRoutes);
 app.use("/likes", likeRoutes);
 
 const PORT = process.env.PORT;

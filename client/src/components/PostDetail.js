@@ -1,3 +1,4 @@
+// client/src/components/PostDetail.js
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostById, deletePost } from "../apis/postApi";
@@ -18,6 +19,8 @@ import {
   DialogTitle,
 } from "@mui/material";
 import ReactMarkdown from "react-markdown";
+import CommentList from "../components/CommentList";
+import { getCommentsByPostId } from "../apis/commentApi";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -28,6 +31,8 @@ export default function PostDetail() {
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
   const [isAuthor, setIsAuthor] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [commentError, setCommentError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -62,6 +67,17 @@ export default function PostDetail() {
       }
     };
     fetchPost();
+
+    const fetchComments = async () => {
+      try {
+        const data = await getCommentsByPostId(id);
+        setComments(data);
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+        setCommentError("Failed to load comments");
+      }
+    };
+    fetchComments();
   }, [id]);
 
   const handleDelete = async () => {
@@ -77,6 +93,31 @@ export default function PostDetail() {
 
   const handleConfirmDelete = () => {
     handleDelete();
+  };
+
+  const handleSubmitComment = async (text, parentId = null) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          post_id: id,
+          content: text,
+          parent_comment_id: parentId,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to post comment");
+      const newComment = await res.json();
+      setComments((prev) => [...prev, newComment]);
+    } catch (err) {
+      console.error("Error posting comment:", err);
+      setCommentError("Failed to submit comment");
+    }
   };
 
   if (loading) {
@@ -164,6 +205,12 @@ export default function PostDetail() {
             </Box>
           )}
         </CardContent>
+
+        <CommentList
+          comments={comments}
+          onSubmitComment={handleSubmitComment}
+        />
+        {commentError && <Alert severity="error">{commentError}</Alert>}
 
         <Dialog
           open={openDialog}

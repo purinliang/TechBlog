@@ -1,13 +1,20 @@
-// commentRoutes.js
+// server/routes/commentRoutes.js
 const express = require("express");
 const CommentModel = require("../models/commentModel");
 const verifyToken = require("../middleware/auth");
 
 const router = express.Router();
 
+const logRequest = (req) => {
+  console.log(`Received ${req.method} request for: ${req.originalUrl}`);
+};
+
 router.get("/post/:postId", async (req, res) => {
+  logRequest(req);
   try {
-    const comments = await CommentModel.getByPostId(req.params.postId);
+    const postId = req.params.postId;
+    const comments = await CommentModel.getByPostId(postId);
+    console.log(`comments of post ${postId} is ` + comments);
     res.json(comments);
   } catch (err) {
     console.error(err);
@@ -16,6 +23,7 @@ router.get("/post/:postId", async (req, res) => {
 });
 
 router.post("/", verifyToken, async (req, res) => {
+  logRequest(req);
   try {
     const { post_id, content, parent_comment_id } = req.body;
     const newComment = await CommentModel.create({
@@ -32,6 +40,7 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 router.put("/:id", verifyToken, async (req, res) => {
+  logRequest(req);
   try {
     const { content } = req.body;
     const result = await CommentModel.update(req.params.id, content);
@@ -43,6 +52,7 @@ router.put("/:id", verifyToken, async (req, res) => {
 });
 
 router.delete("/:id", verifyToken, async (req, res) => {
+  logRequest(req);
   try {
     const result = await CommentModel.delete(req.params.id);
     res.json(result);
