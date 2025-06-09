@@ -29,6 +29,7 @@ export default function CommentList({ postId }) {
         parent_comment_id: parentId,
       });
       setComments((prev) => [...prev, newComment]);
+      window.location.reload();
     } catch (err) {
       console.error("Error posting comment:", err);
       setCommentError("Failed to submit comment");

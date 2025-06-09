@@ -2,6 +2,7 @@
 const express = require("express");
 const CommentModel = require("../models/commentModel");
 const verifyToken = require("../middleware/auth");
+const CommentService = require("../services/commentService");
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get("/post/:postId", async (req, res) => {
   logRequest(req);
   try {
     const postId = req.params.postId;
-    const comments = await CommentModel.getByPostId(postId);
+    const comments = await CommentService.getByPostId(postId);
     res.json(comments);
   } catch (err) {
     console.error(err);
@@ -26,7 +27,7 @@ router.post("/", verifyToken, async (req, res) => {
   const userId = req.user?.userId;
   try {
     const { post_id, content, parent_comment_id } = req.body;
-    const newComment = await CommentModel.create({
+    const newComment = await CommentService.create({
       post_id,
       author_id: userId,
       content,
@@ -40,11 +41,13 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 router.put("/:id", verifyToken, async (req, res) => {
+  console.log("ignored");
+  return;
   logRequest(req);
   const commentId = req.params.id;
   try {
     const { content } = req.body;
-    const result = await CommentModel.update(commentId, content);
+    const result = await CommentService.update(commentId, content);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -53,10 +56,12 @@ router.put("/:id", verifyToken, async (req, res) => {
 });
 
 router.delete("/:id", verifyToken, async (req, res) => {
+  console.log("ignored");
+  return;
   logRequest(req);
   const commentId = req.params.id;
   try {
-    const result = await CommentModel.delete(commentId);
+    const result = await CommentService.delete(commentId);
     res.json(result);
   } catch (err) {
     console.error(err);

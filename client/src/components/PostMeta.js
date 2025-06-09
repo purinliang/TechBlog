@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Typography, Tooltip, IconButton } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
+import Reply from "@mui/icons-material/Reply";
 import { likePost, unlikePost } from "../apis/likeApi";
 
 export default function PostMeta({
@@ -11,7 +11,7 @@ export default function PostMeta({
   initialLikeCount,
   initiallyLiked,
   postId,
-  commentCount = 0,
+  commentCount,
 }) {
   const [likeCount, setLikeCount] = useState(Number(initialLikeCount) || 0);
   const [liked, setLiked] = useState(initiallyLiked || false);
@@ -124,7 +124,7 @@ export default function PostMeta({
               cursor: "default",
             }}
           >
-            <CommentOutlinedIcon fontSize="small" color="action" />
+            <Reply fontSize="small" color="action" />
             <Typography
               variant="body2"
               color="text.secondary"

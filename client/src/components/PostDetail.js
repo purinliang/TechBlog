@@ -30,7 +30,6 @@ export default function PostDetail() {
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
   const [isAuthor, setIsAuthor] = useState(false);
-  const [commentError, setCommentError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -120,6 +119,7 @@ export default function PostDetail() {
             postId={id}
             initialLikeCount={post.like_count}
             initiallyLiked={post.liked_by_user}
+            commentCount={post.comment_count}
           />
 
           {isAuthor && (
@@ -169,7 +169,6 @@ export default function PostDetail() {
         </CardContent>
 
         <CommentList postId={id} />
-        {commentError && <Alert severity="error">{commentError}</Alert>}
 
         <Dialog
           open={openDialog}
