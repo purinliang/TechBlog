@@ -20,12 +20,39 @@ export default function UserStatus() {
     }
   };
 
+  const shortUsername =
+    username && username.length >= 10 ? `${username.slice(0, 8)}...` : username;
+
   return (
     <Box display="flex" alignItems="center">
       {username && (
-        <Typography variant="body1" sx={{ marginRight: 2 }}>
-          {`Welcome, ${username}`}
-        </Typography>
+        <>
+          <Typography
+            variant="body1"
+            sx={{
+              marginRight: 2,
+              display: {
+                xs: "none",
+                sm: "block",
+              },
+            }}
+          >
+            {`Welcome, ${username}`}
+          </Typography>
+
+          <Typography
+            variant="body1"
+            sx={{
+              marginRight: 2,
+              display: {
+                xs: "block",
+                sm: "none",
+              },
+            }}
+          >
+            {shortUsername}
+          </Typography>
+        </>
       )}
       <Button variant="outlined" onClick={handleClick} color="inherit">
         {username ? "Logout" : "Login / Register"}
