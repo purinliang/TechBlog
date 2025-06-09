@@ -2,107 +2,102 @@
 const { dbClient, dbType } = require("../utils/dbClient");
 
 const PostModel = {
-  getAll: async (userId = null) => {
-    if (dbType === "supabase") {
-      let query = dbClient
-        .from("posts")
-        .select(
-          `
-          *,
-          profiles(username),
-          likes(user_id)
-        `
-        )
-        .order("created_at", { ascending: false });
-
-      const { data, error } = await query;
-      if (error) {
-        console.error("post model getAll error: ", error);
-        throw error;
-      }
-
-      return data.map((post) => ({
-        ...post,
-        author_username: post.profiles?.username || "Unknown",
-        like_count: post.likes?.length || 0,
-        liked_by_current_user: userId
-          ? post.likes?.some((like) => like.user_id === userId)
-          : false,
-      }));
-    } else {
-      const result = await dbClient.query(
-        `
-        SELECT
-          p.*,
-          pr.username AS author_username,
-          COALESCE(lc.like_count, 0) AS like_count,
-          CASE
-            WHEN $1 IS NOT NULL AND ul.user_id IS NOT NULL THEN true
-            ELSE false
-          END AS liked_by_current_user
-        FROM posts p
-        LEFT JOIN profiles pr ON p.author_id = pr.id
-        LEFT JOIN (
-          SELECT post_id, COUNT(*) AS like_count
-          FROM likes
-          GROUP BY post_id
-        ) lc ON p.id = lc.post_id
-        LEFT JOIN (
-          SELECT post_id, user_id
-          FROM likes
-          WHERE user_id = $1
-        ) ul ON p.id = ul.post_id
-        ORDER BY p.created_at DESC;
-        `,
-        [userId]
-      );
-      return result.rows;
-    }
-  },
-
-  getMyAll: async (userId) => {
+  getAllPublic: async () => {
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
         .select(
           `
-          *,
-          profiles:profiles(username),
+          id,
+          title,
+          content,
+          author_id,
+          created_at,
+          profiles(username),
           likes(user_id)
-          `
+        `
         )
-        .eq("author_id", userId)
         .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("post model getMyAll error: ", error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data.map((post) => ({
-        ...post,
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        author_id: post.author_id,
         author_username: post.profiles?.username || "Unknown",
+        created_at: post.created_at,
         like_count: post.likes?.length || 0,
-        liked_by_current_user: userId
-          ? post.likes?.some((like) => like.user_id === userId)
-          : false,
       }));
     } else {
       const result = await dbClient.query(
+        `SELECT
+           p.id,
+           p.title,
+           p.content,
+           p.author_id,
+           pr.username AS author_username,
+           p.created_at,
+           COALESCE(lc.like_count, 0) AS like_count
+         FROM posts p
+         LEFT JOIN profiles pr ON p.author_id = pr.id
+         LEFT JOIN (
+           SELECT post_id, COUNT(*) AS like_count
+           FROM likes
+           GROUP BY post_id
+         ) lc ON p.id = lc.post_id
+         ORDER BY p.created_at DESC;
         `
-        SELECT
-          p.*,
-          pr.username AS author_username,
-          COALESCE(lc.like_count, 0) AS like_count
-        FROM posts p
-        LEFT JOIN profiles pr ON p.author_id = pr.id
-        LEFT JOIN (
-          SELECT post_id, COUNT(*) AS like_count
-          FROM likes
-          GROUP BY post_id
-        ) lc ON p.id = lc.post_id
-        WHERE p.author_id = $1
-        ORDER BY p.created_at DESC;
+      );
+      return result.rows;
+    }
+  },
+
+  getMyAllPublic: async (userId) => {
+    if (dbType === "supabase") {
+      const { data, error } = await dbClient
+        .from("posts")
+        .select(
+          `
+          id,
+          title,
+          content,
+          author_id,
+          created_at,
+          profiles(username),
+          likes(user_id)
+        `
+        )
+        .eq("author_id", userId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data.map((post) => ({
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        author_id: post.author_id,
+        author_username: post.profiles?.username || "Unknown",
+        created_at: post.created_at,
+        like_count: post.likes?.length || 0,
+      }));
+    } else {
+      const result = await dbClient.query(
+        `SELECT
+           p.id,
+           p.title,
+           p.content,
+           p.author_id,
+           pr.username AS author_username,
+           p.created_at,
+           COALESCE(lc.like_count, 0) AS like_count
+         FROM posts p
+         LEFT JOIN profiles pr ON p.author_id = pr.id
+         LEFT JOIN (
+           SELECT post_id, COUNT(*) AS like_count
+           FROM likes
+           GROUP BY post_id
+         ) lc ON p.id = lc.post_id
+         WHERE p.author_id = $1
+         ORDER BY p.created_at DESC;
         `,
         [userId]
       );
@@ -110,60 +105,53 @@ const PostModel = {
     }
   },
 
-  getById: async (id, userId = null) => {
+  getByIdPublic: async (postId) => {
     if (dbType === "supabase") {
-      let query = dbClient
+      const { data, error } = await dbClient
         .from("posts")
         .select(
           `
-          *,
+          id,
+          title,
+          content,
+          author_id,
+          created_at,
           profiles(username),
           likes(user_id)
         `
         )
-        .eq("id", id)
+        .eq("id", postId)
         .single();
-
-      const { data, error } = await query;
-      if (error) {
-        console.error("PostModel getById error: ", error);
-        throw error;
-      }
-
+      if (error) throw error;
       return {
-        ...data,
+        id: data.id,
+        title: data.title,
+        content: data.content,
+        author_id: data.author_id,
         author_username: data.profiles?.username || "Unknown",
+        created_at: data.created_at,
         like_count: data.likes?.length || 0,
-        liked_by_current_user: userId
-          ? data.likes?.some((like) => like.user_id === userId)
-          : false,
       };
     } else {
       const result = await dbClient.query(
-        `
-        SELECT
-          p.*,
-          pr.username AS author_username,
-          COALESCE(lc.like_count, 0) AS like_count,
-          CASE
-            WHEN $2 IS NOT NULL AND ul.user_id IS NOT NULL THEN true
-            ELSE false
-          END AS liked_by_current_user
-        FROM posts p
-        LEFT JOIN profiles pr ON p.author_id = pr.id
-        LEFT JOIN (
-          SELECT post_id, COUNT(*) AS like_count
-          FROM likes
-          GROUP BY post_id
-        ) lc ON p.id = lc.post_id
-        LEFT JOIN (
-          SELECT post_id, user_id
-          FROM likes
-          WHERE user_id = $2
-        ) ul ON p.id = ul.post_id
-        WHERE p.id = $1;
+        `SELECT
+           p.id,
+           p.title,
+           p.content,
+           p.author_id,
+           pr.username AS author_username,
+           p.created_at,
+           COALESCE(lc.like_count, 0) AS like_count
+         FROM posts p
+         LEFT JOIN profiles pr ON p.author_id = pr.id
+         LEFT JOIN (
+           SELECT post_id, COUNT(*) AS like_count
+           FROM likes
+           GROUP BY post_id
+         ) lc ON p.id = lc.post_id
+         WHERE p.id = $1;
         `,
-        [id, userId]
+        [postId]
       );
       return result.rows[0];
     }
