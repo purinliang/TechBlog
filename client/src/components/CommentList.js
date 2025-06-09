@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { Typography, Box, TextField, Button, Alert } from "@mui/material";
+import {
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Alert,
+  Skeleton,
+} from "@mui/material";
 import CommentCard from "./CommentCard";
 import { getCommentsByPostId, createComment } from "../apis/commentApi";
-import { Skeleton } from "@mui/material";
 
 export default function CommentList({ postId }) {
   const [comments, setComments] = useState([]);
@@ -10,6 +16,9 @@ export default function CommentList({ postId }) {
   const [commentError, setCommentError] = useState(null);
   const [replyError, setReplyError] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const token = localStorage.getItem("token");
+  const isLoggedIn = Boolean(token);
 
   function SkeletonCommentCard({ level = 0 }) {
     return (
@@ -49,8 +58,6 @@ export default function CommentList({ postId }) {
         parent_comment_id: parentId,
       });
       setComments((prev) => [...prev, newComment]);
-      // The reply count need to be refreshed
-      // window.location.reload();
     } catch (err) {
       console.error("Error posting comment:", err);
       setCommentError("Failed to submit comment");
@@ -66,8 +73,6 @@ export default function CommentList({ postId }) {
       });
       setComments((prev) => [...prev, newComment]);
       setReplyError((prev) => ({ ...prev, [parentId]: null }));
-      // The reply count need to be refreshed
-      // window.location.reload();
     } catch (err) {
       console.error("Error posting reply:", err);
       setReplyError((prev) => ({
@@ -100,6 +105,7 @@ export default function CommentList({ postId }) {
           comment={c}
           onReplySubmit={handleReplyComment}
           level={level}
+          isLoggedIn={isLoggedIn}
         />
         {replyError[c.id] && (
           <Alert severity="error" sx={{ mt: 1 }}>
@@ -138,7 +144,11 @@ export default function CommentList({ postId }) {
         minRows={3}
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
-        placeholder="Write something..."
+        placeholder={
+          isLoggedIn ? "Write something..." : "Please log in to comment"
+        }
+        disabled={!isLoggedIn}
+        title={isLoggedIn ? "" : "Login required to write comments"}
       />
       {commentError && (
         <Alert severity="error" sx={{ mt: 1 }}>
@@ -155,6 +165,8 @@ export default function CommentList({ postId }) {
               setNewComment("");
             }
           }}
+          disabled={!isLoggedIn || !newComment.trim()}
+          title={!isLoggedIn ? "Login required to submit comment" : ""}
         >
           Submit
         </Button>
