@@ -1,3 +1,4 @@
+// client/src/pages/MyPostsPage.js
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import { getMyPosts } from "../apis/postApi";
