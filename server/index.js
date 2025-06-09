@@ -1,6 +1,7 @@
 // server/index.js
 require("./utils/validateEnv");
 require("./utils/dbClient");
+require("./utils/redisClient");
 
 const cors = require("cors");
 const express = require("express");
