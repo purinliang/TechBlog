@@ -1,3 +1,4 @@
+// client/src/components/PostList.js
 import { Box, Alert } from "@mui/material";
 import PostCard from "../components/PostCard";
 

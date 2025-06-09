@@ -38,7 +38,7 @@ export default function PostCard({ post }) {
             postId={post.id}
             initialLikeCount={post.like_count}
             initiallyLiked={post.liked_by_user}
-            commentCount={undefined} // optional
+            commentCount={post.comment_count}
           />
         </CardContent>
       </Link>

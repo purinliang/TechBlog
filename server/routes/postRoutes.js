@@ -5,6 +5,7 @@ const PostModel = require("../models/postModel");
 const verifyToken = require("../middleware/auth");
 const PostService = require("../services/postService");
 const LikeService = require("../services/likeService");
+const CommentService = require("../services/commentService");
 
 const logRequest = (req) => {
   console.log(`Received ${req.method} request for: ${req.originalUrl}`);
@@ -25,6 +26,9 @@ router.get("/", verifyToken.optional, async (req, res) => {
       posts.map(async (post) => {
         post.liked_by_user = likedPostIds.includes(post.id);
         post.like_count = await LikeService.getLikeCountForPost(post.id);
+        post.comment_count = await CommentService.getCommentCountForPost(
+          post.id
+        );
       })
     );
     res.json(posts);
@@ -49,6 +53,9 @@ router.get("/myposts", verifyToken, async (req, res) => {
       myposts.map(async (post) => {
         post.liked_by_user = likedPostIds.includes(post.id);
         post.like_count = await LikeService.getLikeCountForPost(post.id);
+        post.comment_count = await CommentService.getCommentCountForPost(
+          post.id
+        );
       })
     );
     res.json(myposts);
@@ -69,6 +76,9 @@ router.get("/liked", verifyToken, async (req, res) => {
       likedPosts.map(async (post) => {
         post.liked_by_user = true;
         post.like_count = await LikeService.getLikeCountForPost(post.id);
+        post.comment_count = await CommentService.getCommentCountForPost(
+          post.id
+        );
       })
     );
 
@@ -98,6 +108,7 @@ router.get("/:id", verifyToken.optional, async (req, res) => {
     }
 
     post.like_count = await LikeService.getLikeCountForPost(post.id);
+    post.comment_count = await CommentService.getCommentCountForPost(post.id); // 看这里，这里一个能获得点赞数，同步修改其他的几个方法
     res.json(post);
   } catch (err) {
     console.error(`Error fetching post ID ${req.params.id}: ${err.message}`);

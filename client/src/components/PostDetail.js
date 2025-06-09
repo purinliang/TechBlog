@@ -7,7 +7,7 @@ import {
   Card,
   CardContent,
   Typography,
-  CircularProgress,
+  Skeleton,
   Box,
   Link,
   Alert,
@@ -16,8 +16,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Stack,
 } from "@mui/material";
 import ReactMarkdown from "react-markdown";
+import CommentList from "../components/CommentList";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -35,26 +37,11 @@ export default function PostDetail() {
         const fetchedPost = await getPostById(id);
         setPost(fetchedPost);
 
-        // let count = 0;
-        // let liked = false;
-        // const token = localStorage.getItem("token");
-
-        // if (token) {
-        //   const likeStatus = await getLikeStatus(id);
-        //   count = Number(likeStatus.count) || 0;
-        //   liked = !!likeStatus.likedByCurrentUser;
-        // } else {
-        //   const likeRes = await getLikeCount(id);
-        //   count = Number(likeRes.likes) || 0;
-        // }
-
-        // setPost({ ...fetchedPost, likeCount: count, liked });
         const username = localStorage.getItem("username");
         if (fetchedPost?.author_username && username) {
           setIsAuthor(fetchedPost.author_username === username);
         }
       } catch (error) {
-        // TODO: ignore token expired error
         console.error("Error fetching post:", error);
         setError("Post not found.");
       } finally {
@@ -79,12 +66,27 @@ export default function PostDetail() {
     handleDelete();
   };
 
+  const renderSkeleton = () => (
+    <Card
+      variant="outlined"
+      sx={{ maxWidth: 1000, p: 2, "&:hover": { boxShadow: 8 } }}
+    >
+      <CardContent>
+        <Skeleton variant="text" height={60} width="60%" />
+        <Stack spacing={1} sx={{ mt: 2 }}>
+          <Skeleton variant="text" height={30} width="100%" />
+          <Skeleton variant="text" height={30} width="100%" />
+          <Skeleton variant="text" height={30} width="100%" />
+        </Stack>
+        <Box sx={{ mt: 2 }}>
+          <Skeleton variant="text" width="100%" />
+        </Box>
+      </CardContent>
+    </Card>
+  );
+
   if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <Box sx={{ mt: 4 }}>{renderSkeleton()}</Box>;
   }
 
   if (error) {
@@ -117,6 +119,7 @@ export default function PostDetail() {
             postId={id}
             initialLikeCount={post.like_count}
             initiallyLiked={post.liked_by_user}
+            commentCount={post.comment_count}
           />
 
           {isAuthor && (
@@ -164,6 +167,8 @@ export default function PostDetail() {
             </Box>
           )}
         </CardContent>
+
+        <CommentList postId={id} />
 
         <Dialog
           open={openDialog}
