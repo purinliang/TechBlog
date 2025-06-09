@@ -8,6 +8,7 @@ import {
   Collapse,
   TextField,
   Button,
+  Stack,
 } from "@mui/material";
 import { useState } from "react";
 import { Reply } from "@mui/icons-material";
@@ -29,18 +30,36 @@ export default function CommentCard({ comment, onReplySubmit }) {
     <Box sx={{ ml: comment.parent_comment_id ? 4 : 0, mt: 2 }}>
       <Card variant="outlined">
         <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            {comment.author_username || "Anonymous"} -{" "}
-            {new Date(comment.created_at).toLocaleString()}
-          </Typography>
-          <ReactMarkdown>{comment.content}</ReactMarkdown>
-
-          <IconButton
-            size="small"
-            onClick={() => setShowReply((prev) => !prev)}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
           >
-            <Reply fontSize="small" />
-          </IconButton>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ userSelect: "none", flexShrink: 0 }}
+            >
+              by {comment.author_username || "Anonymous"} |{" at "}
+              {new Date(comment.created_at).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: false,
+              })}
+            </Typography>
+            <IconButton
+              size="small"
+              onClick={() => setShowReply((prev) => !prev)}
+              sx={{ ml: 1 }}
+            >
+              <Reply fontSize="small" />
+            </IconButton>
+          </Stack>
+
+          <ReactMarkdown>{comment.content}</ReactMarkdown>
 
           <Collapse in={showReply} timeout="auto" unmountOnExit>
             <Box sx={{ mt: 1 }}>

@@ -1,6 +1,6 @@
 // client/src/components/CommentList.js
 import CommentCard from "./CommentCard";
-import { Box, TextField, Button } from "@mui/material";
+import { Typography, Box, TextField, Button, Alert } from "@mui/material";
 import { useState } from "react";
 
 export default function CommentList({ comments, onSubmitComment }) {
@@ -14,8 +14,16 @@ export default function CommentList({ comments, onSubmitComment }) {
     return map;
   }, {});
 
-  const renderComments = (list) =>
-    list.map((c) => (
+  const renderComments = (list) => {
+    if (list.length === 0) {
+      return (
+        <Alert severity="info" sx={{ py: 1, fontSize: "1rem" }}>
+          No comments yet. Login/register and be the first to comment!
+        </Alert>
+      );
+    }
+
+    return list.map((c) => (
       <Box key={c.id}>
         <CommentCard
           comment={c}
@@ -24,9 +32,16 @@ export default function CommentList({ comments, onSubmitComment }) {
         {repliesMap[c.id] && renderComments(repliesMap[c.id])}
       </Box>
     ));
+  };
 
   return (
     <Box sx={{ mt: 4 }}>
+      <Typography variant="h6" color="primary" fontWeight="600" gutterBottom>
+        Comments
+      </Typography>
+
+      <Box sx={{ mt: 1 }}>{renderComments(topLevel)}</Box>
+
       <TextField
         label="Add a comment"
         fullWidth
@@ -34,6 +49,7 @@ export default function CommentList({ comments, onSubmitComment }) {
         minRows={3}
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
+        sx={{ mt: 3 }}
       />
       <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end" }}>
         <Button
@@ -49,8 +65,6 @@ export default function CommentList({ comments, onSubmitComment }) {
           Submit
         </Button>
       </Box>
-
-      <Box sx={{ mt: 3 }}>{renderComments(topLevel)}</Box>
     </Box>
   );
 }
