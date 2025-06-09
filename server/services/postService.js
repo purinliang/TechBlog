@@ -8,7 +8,7 @@ const POST_BY_ID_CACHE_KEY = (postId) => `post:${postId}`;
 const CACHE_TTL = 60; // seconds
 
 const PostService = {
-  getAll: async () => {
+  getAllPublic: async () => {
     const key = POSTS_CACHE_KEY;
     debug(`Checking cache for key: ${key}`);
 
@@ -26,7 +26,7 @@ const PostService = {
     return posts;
   },
 
-  getMyAll: async (userId) => {
+  getMyAllPublic: async (userId) => {
     const key = MY_POSTS_CACHE_KEY(userId);
     debug(`Checking cache for key: ${key}`);
 
@@ -44,7 +44,7 @@ const PostService = {
     return posts;
   },
 
-  getById: async (postId) => {
+  getByIdPublic: async (postId) => {
     const key = POST_BY_ID_CACHE_KEY(postId);
     debug(`Checking cache for key: ${key}`);
 

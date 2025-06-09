@@ -15,7 +15,7 @@ router.get("/", verifyToken.optional, async (req, res) => {
 
   const userId = req.user?.userId || null;
   try {
-    const posts = await PostService.getAll(userId);
+    const posts = await PostService.getAllPublic(userId);
     let likedPostIds = [];
     if (userId) {
       likedPostIds = await LikeService.getPostIdsLikedByUser(userId);
@@ -39,7 +39,7 @@ router.get("/myposts", verifyToken, async (req, res) => {
 
   const userId = req.user?.userId;
   try {
-    const myposts = await PostService.getMyAll(userId);
+    const myposts = await PostService.getMyAllPublic(userId);
     let likedPostIds = [];
     if (userId) {
       likedPostIds = await LikeService.getPostIdsLikedByUser(userId);
@@ -67,7 +67,7 @@ router.get("/:id", verifyToken.optional, async (req, res) => {
 
   try {
     const userId = req.user?.userId || null;
-    const post = await PostService.getById(req.params.id, userId);
+    const post = await PostService.getByIdPublic(req.params.id, userId);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
@@ -111,7 +111,7 @@ router.put("/:id", verifyToken, async (req, res) => {
   }
 
   try {
-    const post = await PostModel.getById(req.params.id);
+    const post = await PostService.getByIdPublic(req.params.id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -139,7 +139,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
   }
 
   try {
-    const post = await PostService.getById(req.params.id);
+    const post = await PostService.getByIdPublic(req.params.id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
