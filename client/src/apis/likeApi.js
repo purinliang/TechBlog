@@ -9,20 +9,20 @@ async function handleResponse(res) {
   return data;
 }
 
-export async function getLikeCount(postId) {
-  const res = await fetch(`${API_BASE}/likes/${postId}/count`);
-  return handleResponse(res);
-}
+// export async function getLikeCount(postId) {
+//   const res = await fetch(`${API_BASE}/likes/${postId}/count`);
+//   return handleResponse(res);
+// }
 
-export async function getLikeStatus(postId) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/likes/${postId}/status`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return handleResponse(res);
-}
+// export async function getLikeStatus(postId) {
+//   const token = localStorage.getItem("token");
+//   const res = await fetch(`${API_BASE}/likes/${postId}/status`, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+//   return handleResponse(res);
+// }
 
 export async function likePost(postId) {
   const token = localStorage.getItem("token");
