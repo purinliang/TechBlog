@@ -8,11 +8,24 @@ const logRequest = (req) => {
 };
 
 router.get("/", verifyToken.optional, async (req, res) => {
+  const start = process.hrtime.bigint();
   logRequest(req);
 
   const userId = req.user?.userId || null;
   try {
+    const dbStart = process.hrtime.bigint();
     const posts = await PostModel.getAll(userId);
+    const dbEnd = process.hrtime.bigint();
+    const end = process.hrtime.bigint();
+    const total = Number(end - start) / 1e6; // ms
+    const dbMs = Number(dbEnd - dbStart) / 1e6; // ms
+    const appMs = total - dbMs; // ms
+    console.log(
+      `[TIMING] ${req.method} ${req.path} : ` +
+        `TOTAL: ${total.toFixed(1)}ms, ` +
+        `db: ${dbMs.toFixed(1)}ms, ` +
+        `app: ${appMs.toFixed(1)}ms`
+    );
     res.json(posts);
   } catch (err) {
     console.error(`Error fetching posts: ${err.message}`);
