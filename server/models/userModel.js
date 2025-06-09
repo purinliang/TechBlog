@@ -1,3 +1,4 @@
+// server/models/userModel.js
 const { dbClient, dbType } = require("../utils/dbClient");
 
 const UserModel = {

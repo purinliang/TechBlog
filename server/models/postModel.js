@@ -1,3 +1,4 @@
+// server/models/postModel.js
 const { dbClient, dbType } = require("../utils/dbClient");
 
 const PostModel = {
