@@ -1,10 +1,9 @@
-// client/src/pages/MyPostsPage.js
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
-import { getMyPosts } from "../apis/postApi";
+import { getLikedPosts } from "../apis/postApi";
 import { CircularProgress, Box, Alert } from "@mui/material";
 
-export default function MyPostsPage() {
+export default function LikedPostsPage() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,16 +11,15 @@ export default function MyPostsPage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const fetchedPosts = await getMyPosts();
+        const fetchedPosts = await getLikedPosts();
         setPosts(fetchedPosts);
       } catch (error) {
-        console.error("Error fetching my posts:", error);
-        setError("Failed to load my posts." + error);
+        console.error("Error fetching liked posts:", error);
+        setError("Failed to load liked posts. " + error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 

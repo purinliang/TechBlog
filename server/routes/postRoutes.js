@@ -58,6 +58,27 @@ router.get("/myposts", verifyToken, async (req, res) => {
   }
 });
 
+router.get("/liked", verifyToken, async (req, res) => {
+  logRequest(req);
+  const userId = req.user?.userId;
+  try {
+    const likedPostIds = await LikeService.getPostIdsLikedByUser(userId);
+    const likedPosts = await PostService.getPostsByIds(likedPostIds);
+
+    await Promise.all(
+      likedPosts.map(async (post) => {
+        post.liked_by_user = true;
+        post.like_count = await LikeService.getLikeCountForPost(post.id);
+      })
+    );
+
+    res.json(likedPosts);
+  } catch (err) {
+    console.error("Error fetching liked posts:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get("/:id", verifyToken.optional, async (req, res) => {
   logRequest(req);
 

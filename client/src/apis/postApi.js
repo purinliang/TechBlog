@@ -1,3 +1,4 @@
+// client/src/apis/postApi.js
 const API_BASE = process.env.REACT_APP_API_BASE;
 
 async function handleResponse(res) {
@@ -20,6 +21,14 @@ export async function getPosts() {
 export async function getMyPosts() {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/posts/myposts`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return handleResponse(res);
+}
+
+export async function getLikedPosts() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/posts/liked`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
   return handleResponse(res);
