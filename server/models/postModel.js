@@ -1,8 +1,7 @@
-const { connectDatabase } = require("../database/db");
+const { dbClient, dbType } = require("../utils/dbClient");
+
 const PostModel = {
   getAll: async (userId = null) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       let query = dbClient
         .from("posts")
@@ -61,8 +60,6 @@ const PostModel = {
   },
 
   getMyAll: async (userId) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
@@ -113,8 +110,6 @@ const PostModel = {
   },
 
   getById: async (id, userId = null) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       let query = dbClient
         .from("posts")
@@ -174,7 +169,6 @@ const PostModel = {
   },
 
   create: async (title, content, author_id) => {
-    const { dbClient, dbType } = await connectDatabase();
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("posts")
@@ -193,8 +187,6 @@ const PostModel = {
   },
 
   update: async (id, title, content) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { error, data } = await dbClient
         .from("posts")
@@ -213,8 +205,6 @@ const PostModel = {
   },
 
   delete: async (id) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { error, data } = await dbClient
         .from("posts")

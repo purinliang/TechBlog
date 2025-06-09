@@ -1,9 +1,7 @@
-const { connectDatabase } = require("../database/db");
+const { dbClient, dbType } = require("../utils/dbClient");
 
 const UserModel = {
   create: async (username, hashedPassword) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("profiles")
@@ -22,8 +20,6 @@ const UserModel = {
   },
 
   getByUsername: async (username) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { data, error } = await dbClient
         .from("profiles")

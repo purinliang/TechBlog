@@ -2,8 +2,7 @@
 const validateEnv = require("./validateEnv");
 validateEnv(); // Validate environment variables before starting the server
 
-const { connectDatabase } = require("./database/db");
-connectDatabase();
+require("./utils/dbClient");
 
 const cors = require("cors");
 const express = require("express");

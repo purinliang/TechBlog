@@ -1,4 +1,4 @@
-const { connectDatabase } = require("../database/db");
+const { dbClient, dbType } = require("../utils/dbClient");
 
 const LikeModel = {
   //   getLikesCount: async (postId) => {
@@ -44,8 +44,6 @@ const LikeModel = {
   //   },
 
   addLike: async (postId, userId) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { error } = await dbClient
         .from("likes")
@@ -60,8 +58,6 @@ const LikeModel = {
   },
 
   removeLike: async (postId, userId) => {
-    const { dbClient, dbType } = await connectDatabase();
-
     if (dbType === "supabase") {
       const { error } = await dbClient
         .from("likes")
