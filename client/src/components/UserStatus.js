@@ -14,7 +14,12 @@ export default function UserStatus() {
       localStorage.removeItem("token");
       localStorage.removeItem("username");
       setUsername(null);
-      window.location.reload();
+      const protectedRoutes = ["/myposts", "/likedposts", "/auth"];
+      if (protectedRoutes.includes(location.pathname)) {
+        navigate("/");
+      } else {
+        window.location.reload();
+      }
     } else {
       navigate("/auth", { state: { from: location.pathname } });
     }
