@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Box, Typography, Button, Tooltip } from "@mui/material";
+import { Box, Typography, Tooltip, IconButton } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import { likePost, unlikePost } from "../apis/likeApi";
 
 export default function PostMeta({
@@ -10,15 +11,19 @@ export default function PostMeta({
   initialLikeCount,
   initiallyLiked,
   postId,
-  commentCount,
+  commentCount = 0,
 }) {
   const [likeCount, setLikeCount] = useState(Number(initialLikeCount) || 0);
   const [liked, setLiked] = useState(initiallyLiked || false);
 
-  const handleLikeClick = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You need to log in to like posts.");
+  const token = localStorage.getItem("token");
+  const isLoggedIn = Boolean(token);
+
+  const handleLikeClick = async (event) => {
+    event.stopPropagation();
+
+    if (!isLoggedIn) {
+      alert("Please login/register first.");
       return;
     }
 
@@ -37,8 +42,21 @@ export default function PostMeta({
   };
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 4 }}>
-      <Typography variant="body2" color="text.secondary">
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        mt: 4,
+        flexWrap: "wrap",
+      }}
+    >
+      {/* Left Section */}
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ userSelect: "none", flexShrink: 0 }}
+      >
         posted by {author || "Unknown"} | at{" "}
         {new Date(createdAt).toLocaleString("en-US", {
           month: "short",
@@ -47,31 +65,80 @@ export default function PostMeta({
           hour: "numeric",
           minute: "2-digit",
           hour12: false,
-        })}{" "}
-        |
+        })}
       </Typography>
 
-      <Tooltip title={liked ? "Unlike" : "Like"}>
-        <Button
-          onClick={handleLikeClick}
-          variant="text"
-          size="small"
-          color="error"
-          sx={{ minWidth: 0, padding: 0 }}
-        >
-          {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        </Button>
-      </Tooltip>
+      {/* Right Secion */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          flexShrink: 0,
+        }}
+      >
+        {/* Like Section */}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {isLoggedIn ? (
+            <Tooltip title={liked ? "Unlike" : "Like"} arrow>
+              <IconButton
+                onClick={handleLikeClick}
+                color="error"
+                size="small"
+                aria-label={liked ? "Unlike post" : "Like post"}
+              >
+                {liked ? (
+                  <FavoriteIcon fontSize="small" />
+                ) : (
+                  <FavoriteBorderIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Tooltip title="Please login/register first" arrow>
+              <span>
+                <IconButton
+                  disabled
+                  color="error"
+                  size="small"
+                  aria-label="Like post (login required)"
+                  sx={{ cursor: "default" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <FavoriteBorderIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          )}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ ml: 0.5, userSelect: "none" }}
+          >
+            {likeCount}
+          </Typography>
+        </Box>
 
-      <Typography variant="body2" color="text.secondary">
-        {likeCount}
-      </Typography>
-
-      {commentCount !== undefined && (
-        <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>
-          💬 {commentCount} comments
-        </Typography>
-      )}
+        {/* Comment Section */}
+        <Tooltip title="Comments" arrow>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              cursor: "default",
+            }}
+          >
+            <CommentOutlinedIcon fontSize="small" color="action" />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ ml: 0.5, userSelect: "none" }}
+            >
+              {commentCount}
+            </Typography>
+          </Box>
+        </Tooltip>
+      </Box>
     </Box>
   );
 }
