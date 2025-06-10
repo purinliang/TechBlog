@@ -48,4 +48,14 @@ const del = async (key) => {
   }
 };
 
-module.exports = { setEx, get, del };
+const ttl = async (key) => {
+  if (!connected) return -2;
+  try {
+    return await redisClient.ttl(key);
+  } catch (err) {
+    console.warn("⚠️ Redis ttl failed:", err.message);
+    return -2;
+  }
+};
+
+module.exports = { setEx, get, del, ttl };

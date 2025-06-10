@@ -1,18 +1,21 @@
 // server/services/commentService.js
 const CommentModel = require("../models/commentModel");
-const redisClient = require("../utils/redisClient");
+const cacheClient = require("../utils/cacheClient");
 const debug = require("debug")("commentService");
 
 const COMMENTS_CACHE_KEY = (postId) => `post:${postId}:comments`;
 const COMMENT_COUNT_CACHE_KEY = (postId) => `post:${postId}:comment_count`;
-const CACHE_TTL = 60; // seconds
+
+const getRandomTTL = (base = 180, jitter = 60) => {
+  return base + Math.floor(Math.random() * jitter); // 180~240 seconds
+};
 
 const CommentService = {
   getCommentCountForPost: async (postId) => {
     const key = COMMENT_COUNT_CACHE_KEY(postId);
     debug(`Checking cache for comment count key: ${key}`);
 
-    const cached = await redisClient.get(key);
+    const cached = await cacheClient.get(key);
     if (cached !== null) {
       debug(`Cache hit for comment count: ${cached}`);
       return Number(cached);
@@ -22,12 +25,12 @@ const CommentService = {
     const comments = await CommentModel.getByPostId(postId);
     const count = comments.length;
 
-    await redisClient.setEx(
+    await cacheClient.setEx(
       COMMENTS_CACHE_KEY,
-      CACHE_TTL,
+      getRandomTTL(),
       JSON.stringify(comments)
     );
-    await redisClient.setEx(key, CACHE_TTL, count.toString());
+    await cacheClient.setEx(key, getRandomTTL(), count.toString());
     debug(`Cached comment count ${count} for post ${postId} in key ${key}`);
 
     return count;
@@ -37,7 +40,7 @@ const CommentService = {
     const key = COMMENTS_CACHE_KEY(postId);
     debug(`Checking cache for comments key: ${key}`);
 
-    const cached = await redisClient.get(key);
+    const cached = await cacheClient.get(key);
     if (cached !== null) {
       debug(`Cache hit for comments`);
       return JSON.parse(cached);
@@ -47,10 +50,10 @@ const CommentService = {
     const comments = await CommentModel.getByPostId(postId);
     const count = comments.length;
 
-    await redisClient.setEx(key, CACHE_TTL, JSON.stringify(comments));
-    await redisClient.setEx(
+    await cacheClient.setEx(key, getRandomTTL(), JSON.stringify(comments));
+    await cacheClient.setEx(
       COMMENT_COUNT_CACHE_KEY,
-      CACHE_TTL,
+      getRandomTTL(),
       JSON.stringify(count)
     );
 
@@ -64,8 +67,8 @@ const CommentService = {
       content,
       parent_comment_id,
     });
-    await redisClient.del(COMMENTS_CACHE_KEY(post_id));
-    await redisClient.del(COMMENT_COUNT_CACHE_KEY(post_id));
+    await cacheClient.del(COMMENTS_CACHE_KEY(post_id));
+    await cacheClient.del(COMMENT_COUNT_CACHE_KEY(post_id));
     return comment;
   },
 
@@ -73,8 +76,8 @@ const CommentService = {
     const comment = await CommentModel.update(id, content);
 
     if (comment?.post_id) {
-      await redisClient.del(COMMENTS_CACHE_KEY(comment.post_id));
-      await redisClient.del(COMMENT_COUNT_CACHE_KEY(comment.post_id));
+      await cacheClient.del(COMMENTS_CACHE_KEY(comment.post_id));
+      await cacheClient.del(COMMENT_COUNT_CACHE_KEY(comment.post_id));
     }
 
     return comment;
@@ -84,8 +87,8 @@ const CommentService = {
     const comment = await CommentModel.delete(id);
 
     if (comment?.post_id) {
-      await redisClient.del(COMMENTS_CACHE_KEY(comment.post_id));
-      await redisClient.del(COMMENT_COUNT_CACHE_KEY(comment.post_id));
+      await cacheClient.del(COMMENTS_CACHE_KEY(comment.post_id));
+      await cacheClient.del(COMMENT_COUNT_CACHE_KEY(comment.post_id));
     }
 
     return comment;
