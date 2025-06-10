@@ -10,6 +10,8 @@ const memoryCache = new LRU({
   ttl: LRU_TTL, // 30 seconds in ms
 });
 
+const REFRESH_THRESHOLD = 45; // seconds
+
 const cacheClient = {
   get: async (key) => {
     const memValue = memoryCache.get(key);
@@ -37,6 +39,11 @@ const cacheClient = {
     memoryCache.delete(key);
     await redisClient.del(key);
     debug(`Deleted key from both LRU and Redis: ${key}`);
+  },
+
+  shouldRefresh: async (key) => {
+    const ttl = await redisClient.ttl(key);
+    return ttl > 0 && ttl < REFRESH_THRESHOLD;
   },
 };
 

@@ -18,6 +18,16 @@ const PostService = {
     const cached = await cacheClient.get(key);
     if (cached) {
       debug(`Cache hit for ${key}`);
+
+      if (await cacheClient.shouldRefresh(key)) {
+        debug(`🔁 TTL about to expire, refreshing key: ${key}`);
+
+        PostModel.getAllPublic().then(async (posts) => {
+          await cacheClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
+          debug(`✅ Refreshed cache for key: ${key}`);
+        });
+      }
+
       return JSON.parse(cached);
     }
 
