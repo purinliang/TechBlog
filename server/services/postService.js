@@ -1,13 +1,13 @@
 const PostModel = require("../models/postModel");
-const redisClient = require("../utils/redisClient");
+const cacheClient = require("../utils/cacheClient");
 const debug = require("debug")("postService");
 
 const POSTS_CACHE_KEY = "posts:all";
 const MY_POSTS_CACHE_KEY = (userId) => `user:${userId}:posts`;
 const POST_BY_ID_CACHE_KEY = (postId) => `post:${postId}`;
 
-const getRandomTTL = (base = 120, jitter = 30) => {
-  return base + Math.floor(Math.random() * jitter); // 120~150 seconds
+const getRandomTTL = (base = 300, jitter = 60) => {
+  return base + Math.floor(Math.random() * jitter); // 180~240 seconds
 };
 
 const PostService = {
@@ -15,7 +15,7 @@ const PostService = {
     const key = POSTS_CACHE_KEY;
     debug(`Checking cache for key: ${key}`);
 
-    const cached = await redisClient.get(key);
+    const cached = await cacheClient.get(key);
     if (cached) {
       debug(`Cache hit for ${key}`);
       return JSON.parse(cached);
@@ -23,7 +23,7 @@ const PostService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const posts = await PostModel.getAllPublic();
-    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
+    await cacheClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
     debug(`Cached public posts to ${key}`);
 
     return posts;
@@ -33,7 +33,7 @@ const PostService = {
     const key = MY_POSTS_CACHE_KEY(userId);
     debug(`Checking cache for key: ${key}`);
 
-    const cached = await redisClient.get(key);
+    const cached = await cacheClient.get(key);
     if (cached) {
       debug(`Cache hit for ${key}`);
       return JSON.parse(cached);
@@ -41,7 +41,7 @@ const PostService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const posts = await PostModel.getMyAllPublic(userId);
-    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
+    await cacheClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
     debug(`Cached user's public posts to ${key}`);
 
     return posts;
@@ -56,7 +56,7 @@ const PostService = {
     const key = POST_BY_ID_CACHE_KEY(postId);
     debug(`Checking cache for key: ${key}`);
 
-    const cached = await redisClient.get(key);
+    const cached = await cacheClient.get(key);
     if (cached) {
       debug(`Cache hit for ${key}`);
       return JSON.parse(cached);
@@ -64,7 +64,7 @@ const PostService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const post = await PostModel.getByIdPublic(postId);
-    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(post));
+    await cacheClient.setEx(key, getRandomTTL(), JSON.stringify(post));
     debug(`Cached post ${postId} to ${key}`);
 
     return post;
@@ -73,7 +73,7 @@ const PostService = {
   async create(title, content, userId) {
     debug(`Creating post by user ${userId}`);
     const result = await PostModel.create(title, content, userId);
-    await redisClient.del(POSTS_CACHE_KEY);
+    await cacheClient.del(POSTS_CACHE_KEY);
     debug(`Cache cleared for ${POSTS_CACHE_KEY} after post creation`);
     return result;
   },
@@ -81,8 +81,8 @@ const PostService = {
   async update(id, title, content) {
     debug(`Updating post ${id}`);
     const result = await PostModel.update(id, title, content);
-    await redisClient.del(POSTS_CACHE_KEY);
-    await redisClient.del(POST_BY_ID_CACHE_KEY(id));
+    await cacheClient.del(POSTS_CACHE_KEY);
+    await cacheClient.del(POST_BY_ID_CACHE_KEY(id));
     debug(
       `Cache cleared for ${POSTS_CACHE_KEY} and ${POST_BY_ID_CACHE_KEY(
         id
@@ -94,8 +94,8 @@ const PostService = {
   async delete(id) {
     debug(`Deleting post ${id}`);
     const result = await PostModel.delete(id);
-    await redisClient.del(POSTS_CACHE_KEY);
-    await redisClient.del(POST_BY_ID_CACHE_KEY(id));
+    await cacheClient.del(POSTS_CACHE_KEY);
+    await cacheClient.del(POST_BY_ID_CACHE_KEY(id));
     debug(
       `Cache cleared for ${POSTS_CACHE_KEY} and ${POST_BY_ID_CACHE_KEY(
         id
