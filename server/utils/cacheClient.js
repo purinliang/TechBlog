@@ -1,13 +1,13 @@
 // utils/cacheClient.js
-const LRU = require("lru-cache");
+const { LRUCache } = require("lru-cache");
 const redisClient = require("./redisClient");
 
 const debug = require("debug")("cacheClient");
 
 const LRU_TTL = 30 * 1000;
-const memoryCache = new LRU({
+const memoryCache = new LRUCache({
   max: 1000,
-  ttl: LRU_TTL, // 30 seconds in ms
+  ttl: 1000 * 30, // 30 seconds
 });
 
 const REFRESH_THRESHOLD = 45; // seconds
