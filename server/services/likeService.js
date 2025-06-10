@@ -4,7 +4,10 @@ const debug = require("debug")("likeService");
 
 const LIKES_CACHE_KEY = (userId) => `likes:user:${userId}`;
 const LIKE_COUNT_CACHE_KEY = (postId) => `likes:count:${postId}`;
-const CACHE_TTL = 60; // seconds
+
+const getRandomTTL = (base = 120, jitter = 30) => {
+  return base + Math.floor(Math.random() * jitter); // 120~150 seconds
+};
 
 const LikeService = {
   getPostIdsLikedByUser: async (userId) => {
@@ -18,7 +21,7 @@ const LikeService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const likedPostIds = await LikeModel.getPostIdsLikedByUser(userId);
-    await redisClient.setEx(key, CACHE_TTL, JSON.stringify(likedPostIds));
+    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(likedPostIds));
     debug(`Cached liked post IDs for user ${userId}`);
     return likedPostIds;
   },
@@ -34,7 +37,7 @@ const LikeService = {
 
     debug(`Like count cache miss for post ${postId}`);
     const count = await LikeModel.getLikeCountForPost(postId);
-    await redisClient.setEx(key, CACHE_TTL, String(count));
+    await redisClient.setEx(key, getRandomTTL(), String(count));
     debug(`Cached like count for post ${postId}`);
     return count;
   },

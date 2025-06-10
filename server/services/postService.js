@@ -5,7 +5,10 @@ const debug = require("debug")("postService");
 const POSTS_CACHE_KEY = "posts:all";
 const MY_POSTS_CACHE_KEY = (userId) => `user:${userId}:posts`;
 const POST_BY_ID_CACHE_KEY = (postId) => `post:${postId}`;
-const CACHE_TTL = 60; // seconds
+
+const getRandomTTL = (base = 120, jitter = 30) => {
+  return base + Math.floor(Math.random() * jitter); // 120~150 seconds
+};
 
 const PostService = {
   getAllPublic: async () => {
@@ -20,8 +23,8 @@ const PostService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const posts = await PostModel.getAllPublic();
-    await redisClient.setEx(key, CACHE_TTL, JSON.stringify(posts));
-    debug(`Cached public posts to ${key} for ${CACHE_TTL}s`);
+    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
+    debug(`Cached public posts to ${key}`);
 
     return posts;
   },
@@ -38,8 +41,8 @@ const PostService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const posts = await PostModel.getMyAllPublic(userId);
-    await redisClient.setEx(key, CACHE_TTL, JSON.stringify(posts));
-    debug(`Cached user's public posts to ${key} for ${CACHE_TTL}s`);
+    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(posts));
+    debug(`Cached user's public posts to ${key}`);
 
     return posts;
   },
@@ -61,8 +64,8 @@ const PostService = {
 
     debug(`Cache miss for ${key}, querying DB...`);
     const post = await PostModel.getByIdPublic(postId);
-    await redisClient.setEx(key, CACHE_TTL, JSON.stringify(post));
-    debug(`Cached post ${postId} to ${key} for ${CACHE_TTL}s`);
+    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(post));
+    debug(`Cached post ${postId} to ${key}`);
 
     return post;
   },

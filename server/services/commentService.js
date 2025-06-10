@@ -5,7 +5,10 @@ const debug = require("debug")("commentService");
 
 const COMMENTS_CACHE_KEY = (postId) => `post:${postId}:comments`;
 const COMMENT_COUNT_CACHE_KEY = (postId) => `post:${postId}:comment_count`;
-const CACHE_TTL = 60; // seconds
+
+const getRandomTTL = (base = 120, jitter = 30) => {
+  return base + Math.floor(Math.random() * jitter); // 120~150 seconds
+};
 
 const CommentService = {
   getCommentCountForPost: async (postId) => {
@@ -24,10 +27,10 @@ const CommentService = {
 
     await redisClient.setEx(
       COMMENTS_CACHE_KEY,
-      CACHE_TTL,
+      getRandomTTL(),
       JSON.stringify(comments)
     );
-    await redisClient.setEx(key, CACHE_TTL, count.toString());
+    await redisClient.setEx(key, getRandomTTL(), count.toString());
     debug(`Cached comment count ${count} for post ${postId} in key ${key}`);
 
     return count;
@@ -47,10 +50,10 @@ const CommentService = {
     const comments = await CommentModel.getByPostId(postId);
     const count = comments.length;
 
-    await redisClient.setEx(key, CACHE_TTL, JSON.stringify(comments));
+    await redisClient.setEx(key, getRandomTTL(), JSON.stringify(comments));
     await redisClient.setEx(
       COMMENT_COUNT_CACHE_KEY,
-      CACHE_TTL,
+      getRandomTTL(),
       JSON.stringify(count)
     );
 
